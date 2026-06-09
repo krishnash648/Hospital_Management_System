@@ -582,20 +582,20 @@ h6 {
 }
 
 .secondary-btn {
-  background: white;
-  color: #0f172a;
-  border: 1px solid #dbe2ea;
   padding: 15px 30px;
   border-radius: 14px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  background: #0f172a;
+  color: white;
+  border: none;
 }
 
 .secondary-btn:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  background: #1e293b;
+  transform: translateY(-2px);
 }
 
 .hero-stats {
@@ -800,17 +800,18 @@ nav .btn {
 }
 
 nav .loginBtn {
-  background: white;
-  border: 1px solid #dbe2ea;
-  color: #0f172a;
   padding: 12px 22px;
-  border-radius: 12px;
-  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.3s ease;
+  background: transparent;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  border-radius: 14px;
+  font-weight: 600;
 }
 
 nav .loginBtn:hover {
+  background: #f8fafc;
   border-color: #2563eb;
   color: #2563eb;
 }
