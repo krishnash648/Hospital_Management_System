@@ -19,7 +19,7 @@ const MessageForm = () => {
           {
             withCredentials: true,
             headers: { "Content-Type": "application/json" },
-          }
+          },
         )
         .then((res) => {
           toast.success(res.data.message);
@@ -36,48 +36,65 @@ const MessageForm = () => {
 
   return (
     <>
-      <div className="container form-component message-form">
-        <h2>Send Us A Message</h2>
-        <form onSubmit={handleMessage}>
-          <div>
-            <input
-              type="text"
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
+      <div className="container contact-section">
+        <div className="contact-wrapper">
+          <div className="contact-image">
+            <img src="/contact-doctor.png" alt="Healthcare Professional" />
           </div>
-          <div>
-            <input
-              type="text"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-              type="number"
-              placeholder="Mobile Number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
+
+          <div className="contact-form-area">
+            <p className="section-tag">CONTACT US</p>
+
+            <h2>Talk To Our Healthcare Team</h2>
+
+            <p className="form-desc">
+              Have questions about appointments, treatments or specialists? Our
+              healthcare experts are here to help.
+            </p>
+
+            <form onSubmit={handleMessage}>
+              <div className="form-row">
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+
+              <div className="form-row">
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Mobile Number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+
+              <textarea
+                placeholder="How can we help you?"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+
+              <button type="submit">Send Message</button>
+            </form>
           </div>
-          <textarea
-            rows={7}
-            placeholder="Message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <div style={{ justifyContent: "center", alignItems: "center" }}>
-            <button type="submit">Send</button>
-          </div>
-        </form>
-        <img src="/Vector.png" alt="vector" />
+        </div>
       </div>
     </>
   );

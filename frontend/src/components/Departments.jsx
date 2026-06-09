@@ -5,90 +5,79 @@ import "react-multi-carousel/lib/styles.css";
 const Departments = () => {
   const departmentsArray = [
     {
-      name: "Pediatrics",
-      imageUrl: "/departments/pedia.jpg",
-    },
-    {
-      name: "Orthopedics",
-      imageUrl: "/departments/ortho.jpg",
-    },
-    {
       name: "Cardiology",
-      imageUrl: "/departments/cardio.jpg",
+      imageUrl: "/departments/cardio.png",
+      description: "Heart and cardiovascular care.",
     },
     {
       name: "Neurology",
-      imageUrl: "/departments/neuro.jpg",
+      imageUrl: "/departments/neuro.png",
+      description: "Brain and nervous system specialists.",
     },
     {
-      name: "Oncology",
-      imageUrl: "/departments/onco.jpg",
+      name: "Orthopedics",
+      imageUrl: "/departments/ortho.png",
+      description: "Joint, bone and mobility treatments.",
     },
     {
-      name: "Radiology",
-      imageUrl: "/departments/radio.jpg",
-    },
-    {
-      name: "Physical Therapy",
-      imageUrl: "/departments/therapy.jpg",
+      name: "Pediatrics",
+      imageUrl: "/departments/pedia.png",
+      description: "Healthcare for children and infants.",
     },
     {
       name: "Dermatology",
-      imageUrl: "/departments/derma.jpg",
+      imageUrl: "/departments/derma.png",
+      description: "Skin and cosmetic treatments.",
     },
     {
-      name: "ENT",
-      imageUrl: "/departments/ent.jpg",
+      name: "Radiology",
+      imageUrl: "/departments/radio.png",
+      description: "Advanced medical imaging services.",
     },
   ];
 
   const responsive = {
-    extraLarge: {
-      breakpoint: { max: 3000, min: 1324 },
-      items: 4,
-      slidesToSlide: 1, // optional, default to 1.
-    },
-    large: {
-      breakpoint: { max: 1324, min: 1005 },
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
       items: 3,
-      slidesToSlide: 1, // optional, default to 1.
     },
-    medium: {
-      breakpoint: { max: 1005, min: 700 },
+    tablet: {
+      breakpoint: { max: 1024, min: 768 },
       items: 2,
-      slidesToSlide: 1, // optional, default to 1.
     },
-    small: {
-      breakpoint: { max: 700, min: 0 },
+    mobile: {
+      breakpoint: { max: 768, min: 0 },
       items: 1,
-      slidesToSlide: 1, // optional, default to 1.
     },
   };
 
   return (
-    <>
-      <div className="container departments">
-        <h2>Departments</h2>
-        <Carousel
-          responsive={responsive}
-          removeArrowOnDeviceType={[
-            // "superLargeDesktop",
-            // "desktop",
-            "tablet",
-            "mobile",
-          ]}
-        >
-          {departmentsArray.map((depart, index) => {
-            return (
-              <div key={index} className="card">
-                <div className="depart-name">{depart.name}</div>
-                <img src={depart.imageUrl} alt="Department" />
-              </div>
-            );
-          })}
-        </Carousel>
+    <section className="departments container">
+      <div className="section-header">
+        <p>OUR SERVICES</p>
+        <h2>Healthcare Specialties</h2>
+        <span className="section-desc">
+          Specialized healthcare services delivered by experienced
+          professionals.
+        </span>
       </div>
-    </>
+
+      <Carousel responsive={responsive}>
+        {departmentsArray.map((department, index) => (
+          <div className="card" key={index}>
+            <img src={department.imageUrl} alt={department.name} />
+
+            <div className="card-content">
+              <h3>{department.name}</h3>
+
+              <p>{department.description}</p>
+
+              <button>Learn More</button>
+            </div>
+          </div>
+        ))}
+      </Carousel>
+    </section>
   );
 };
 
