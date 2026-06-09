@@ -19,15 +19,60 @@ const AppointmentForm = () => {
 
   // Mock doctors array with random names and departments
   const mockDoctors = [
-    { _id: '1', firstName: 'John', lastName: 'Doe', doctorDepartment: 'Pediatrics' },
-    { _id: '2', firstName: 'Jane', lastName: 'Smith', doctorDepartment: 'Orthopedics' },
-    { _id: '3', firstName: 'Alice', lastName: 'Johnson', doctorDepartment: 'Cardiology' },
-    { _id: '4', firstName: 'Bob', lastName: 'Brown', doctorDepartment: 'Neurology' },
-    { _id: '5', firstName: 'Chris', lastName: 'Evans', doctorDepartment: 'Oncology' },
-    { _id: '6', firstName: 'Linda', lastName: 'Taylor', doctorDepartment: 'Radiology' },
-    { _id: '7', firstName: 'Emma', lastName: 'Davis', doctorDepartment: 'Physical Therapy' },
-    { _id: '8', firstName: 'George', lastName: 'Wilson', doctorDepartment: 'Dermatology' },
-    { _id: '9', firstName: 'Sophia', lastName: 'Clark', doctorDepartment: 'ENT' },
+    {
+      _id: "1",
+      firstName: "John",
+      lastName: "Doe",
+      doctorDepartment: "Pediatrics",
+    },
+    {
+      _id: "2",
+      firstName: "Jane",
+      lastName: "Smith",
+      doctorDepartment: "Orthopedics",
+    },
+    {
+      _id: "3",
+      firstName: "Alice",
+      lastName: "Johnson",
+      doctorDepartment: "Cardiology",
+    },
+    {
+      _id: "4",
+      firstName: "Bob",
+      lastName: "Brown",
+      doctorDepartment: "Neurology",
+    },
+    {
+      _id: "5",
+      firstName: "Chris",
+      lastName: "Evans",
+      doctorDepartment: "Oncology",
+    },
+    {
+      _id: "6",
+      firstName: "Linda",
+      lastName: "Taylor",
+      doctorDepartment: "Radiology",
+    },
+    {
+      _id: "7",
+      firstName: "Emma",
+      lastName: "Davis",
+      doctorDepartment: "Physical Therapy",
+    },
+    {
+      _id: "8",
+      firstName: "George",
+      lastName: "Wilson",
+      doctorDepartment: "Dermatology",
+    },
+    {
+      _id: "9",
+      firstName: "Sophia",
+      lastName: "Clark",
+      doctorDepartment: "ENT",
+    },
   ];
 
   const departmentsArray = [
@@ -69,7 +114,7 @@ const AppointmentForm = () => {
         {
           withCredentials: true,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
       toast.success(data.message);
       setFirstName("");
@@ -91,119 +136,174 @@ const AppointmentForm = () => {
   };
 
   return (
-    <div className="container form-component appointment-form">
-      <h2>Appointment</h2>
-      <form onSubmit={handleAppointment}>
-        <div>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
+    <section className="container appointment-section">
+      <div className="appointment-wrapper">
+        {/* LEFT SIDE */}
+
+        <div className="appointment-image">
+          <img src="/appointment-doctor.png" alt="Doctor Consultation" />
+
+          <div className="appointment-features">
+            <div className="feature-box">
+              <h4>Expert Doctors</h4>
+              <p>Board-certified specialists</p>
+            </div>
+
+            <div className="feature-box">
+              <h4>Quick Booking</h4>
+              <p>Appointments in minutes</p>
+            </div>
+
+            <div className="feature-box">
+              <h4>Secure Care</h4>
+              <p>Private & Protected</p>
+            </div>
+          </div>
         </div>
-        <div>
-          <input
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Mobile Number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
+
+        {/* RIGHT SIDE */}
+
+        <div className="appointment-form-area">
+          <p className="section-tag">BOOK APPOINTMENT</p>
+
+          <h2>Schedule Your Visit</h2>
+
+          <p className="form-desc">
+            Choose your preferred department and doctor, then select a
+            convenient appointment date. Our healthcare team will confirm your
+            booking shortly.
+          </p>
+
+          <form onSubmit={handleAppointment}>
+            <div className="form-row">
+              <input
+                type="text"
+                placeholder="First Name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </div>
+
+            <div className="form-row">
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+
+              <input
+                type="number"
+                placeholder="Mobile Number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+
+            <div className="form-row">
+              <input
+                type="number"
+                placeholder="Government ID"
+                value={nic}
+                onChange={(e) => setNic(e.target.value)}
+              />
+
+              <input
+                type="date"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+              />
+            </div>
+
+            <div className="form-row">
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+
+              <input
+                type="date"
+                value={appointmentDate}
+                onChange={(e) => setAppointmentDate(e.target.value)}
+              />
+            </div>
+
+            <div className="form-row">
+              <select
+                value={department}
+                onChange={(e) => {
+                  setDepartment(e.target.value);
+                  setDoctorFirstName("");
+                  setDoctorLastName("");
+                }}
+              >
+                {departmentsArray.map((depart, index) => (
+                  <option value={depart} key={index}>
+                    {depart}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={`${doctorFirstName} ${doctorLastName}`}
+                onChange={(e) => {
+                  const [firstName, lastName] = e.target.value.split(" ");
+
+                  setDoctorFirstName(firstName);
+                  setDoctorLastName(lastName);
+                }}
+                disabled={!department}
+              >
+                <option value="">Select Doctor</option>
+
+                {doctors
+                  .filter((doctor) => doctor.doctorDepartment === department)
+                  .map((doctor) => (
+                    <option
+                      value={`${doctor.firstName} ${doctor.lastName}`}
+                      key={doctor._id}
+                    >
+                      Dr. {doctor.firstName} {doctor.lastName}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <textarea
+              rows="5"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Your Address"
+            />
+
+            <div className="returning-patient">
+              <input
+                type="checkbox"
+                checked={hasVisited}
+                onChange={(e) => setHasVisited(e.target.checked)}
+              />
+
+              <label>Returning Patient</label>
+            </div>
+
+            <button type="submit" className="appointment-btn">
+              Confirm Appointment
+            </button>
+          </form>
         </div>
-        <div>
-          <input
-            type="number"
-            placeholder="NIC"
-            value={nic}
-            onChange={(e) => setNic(e.target.value)}
-          />
-          <input
-            type="date"
-            placeholder="Date of Birth"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-          />
-        </div>
-        <div>
-          <select value={gender} onChange={(e) => setGender(e.target.value)}>
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-          <input
-            type="date"
-            placeholder="Appointment Date"
-            value={appointmentDate}
-            onChange={(e) => setAppointmentDate(e.target.value)}
-          />
-        </div>
-        <div>
-          <select
-            value={department}
-            onChange={(e) => {
-              setDepartment(e.target.value);
-              setDoctorFirstName("");
-              setDoctorLastName("");
-            }}
-          >
-            {departmentsArray.map((depart, index) => (
-              <option value={depart} key={index}>
-                {depart}
-              </option>
-            ))}
-          </select>
-          <select
-            value={`${doctorFirstName} ${doctorLastName}`}
-            onChange={(e) => {
-              const [firstName, lastName] = e.target.value.split(" ");
-              setDoctorFirstName(firstName);
-              setDoctorLastName(lastName);
-            }}
-            disabled={!department}
-          >
-            <option value="">Select Doctor</option>
-            {doctors
-              .filter((doctor) => doctor.doctorDepartment === department)
-              .map((doctor) => (
-                <option
-                  value={`${doctor.firstName} ${doctor.lastName}`}
-                  key={doctor._id}
-                >
-                  {doctor.firstName} {doctor.lastName}
-                </option>
-              ))}
-          </select>
-        </div>
-        <textarea
-          rows="10"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder="Address"
-        />
-        <div style={{ gap: "10px", justifyContent: "flex-end", flexDirection: "row" }}>
-          <p style={{ marginBottom: 0 }}>Have you visited before?</p>
-          <input
-            type="checkbox"
-            checked={hasVisited}
-            onChange={(e) => setHasVisited(e.target.checked)}
-            style={{ flex: "none", width: "25px" }}
-          />
-        </div>
-        <button style={{ margin: "0 auto" }}>GET APPOINTMENT</button>
-      </form>
-    </div>
+      </div>
+    </section>
   );
 };
 
