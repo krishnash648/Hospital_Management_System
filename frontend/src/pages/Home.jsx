@@ -7,16 +7,12 @@ import MessageForm from "../components/MessageForm";
 const Home = () => {
   return (
     <>
-      <Hero title={
-        "Welcome to Lilypad Community Hospital | Your Trusted Healthcare Partners!"
-        } 
-        imageUrl={"/heroo.png"}
-      />
-      <Biography imageUrl={"/about.png"}/>
-      <Departments/>
-      <MessageForm/>
-    </>   
-  ); 
+      <Hero imageUrl={"/heroo.png"} />
+      <Biography imageUrl={"/about.png"} />
+      <Departments />
+      <MessageForm />
+    </>
+  );
 };
 
 export default Home;

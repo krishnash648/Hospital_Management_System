@@ -7,7 +7,10 @@ import { Context } from "../main";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
+
   const { isAuthenticated, setIsAuthenticated } = useContext(Context);
+
+  const navigateTo = useNavigate();
 
   const handleLogout = async () => {
     await axios
@@ -23,45 +26,56 @@ const Navbar = () => {
       });
   };
 
-  const navigateTo = useNavigate();
-
   const goToLogin = () => {
     navigateTo("/login");
   };
 
   return (
-    <>
-      <nav className={"container"}>
-        <div className="logo">
-          <img src="/logo.png" alt="logo" className="logo-img" />
+    <nav className="container">
+      {/* Logo */}
+      <div className="logo">
+        <img src="/logo.png" alt="Goldvalley Clinic" className="logo-img" />
+      </div>
+
+      {/* Navigation */}
+      <div className={show ? "navLinks showmenu" : "navLinks"}>
+        <div className="links">
+          <Link to="/" onClick={() => setShow(false)}>
+            Home
+          </Link>
+
+          <Link to="/appointment" onClick={() => setShow(false)}>
+            Appointment
+          </Link>
+
+          <Link to="/about" onClick={() => setShow(false)}>
+            About Us
+          </Link>
         </div>
-        <div className={show ? "navLinks showmenu" : "navLinks"}>
-          <div className="links">
-            <Link to={"/"} onClick={() => setShow(!show)}>
-              Home
-            </Link>
-            <Link to={"/appointment"} onClick={() => setShow(!show)}>
-              Appointment
-            </Link>
-            <Link to={"/about"} onClick={() => setShow(!show)}>
-              About Us
+
+        {/* Actions */}
+        {isAuthenticated ? (
+          <button className="book-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        ) : (
+          <div className="nav-actions">
+            <button className="btn loginBtn" onClick={goToLogin}>
+              Login
+            </button>
+
+            <Link to="/appointment">
+              <button className="btn appointmentBtn">Book Appointment</button>
             </Link>
           </div>
-          {isAuthenticated ? (
-            <button className="logoutBtn btn" onClick={handleLogout}>
-              LOGOUT
-            </button>
-          ) : (
-            <button className="loginBtn btn" onClick={goToLogin}>
-              LOGIN
-            </button>
-          )}
-        </div>
-        <div className="hamburger" onClick={() => setShow(!show)}>
-          <GiHamburgerMenu />
-        </div>
-      </nav>
-    </>
+        )}
+      </div>
+
+      {/* Mobile Menu */}
+      <div className="hamburger" onClick={() => setShow(!show)}>
+        <GiHamburgerMenu />
+      </div>
+    </nav>
   );
 };
 

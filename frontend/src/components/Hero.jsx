@@ -1,28 +1,51 @@
 import React from "react";
 
-const Hero = ({ title, imageUrl }) => {
+const Hero = ({ imageUrl }) => {
   return (
-    <>
-      <div className="hero container">
-        <div className="banner">
-          <h1>{title}</h1>
-          <p>
-            Goldvalley Clinic is a state-of-the-art facility dedicated
-            to providing comprehensive healthcare services with compassion and
-            expertise. Our team of skilled professionals is committed to
-            delivering personalized care tailored to each patient's needs. At
-            Goldvalley, we prioritize your well-being, ensuring a harmonious
-            journey towards optimal health and wellness.
-          </p>
+    <section className="hero container">
+      {" "}
+      <div className="banner">
+        {" "}
+        <span className="hero-tag">Trusted Healthcare Platform</span>
+        <h1>
+          Your Health,
+          <br />
+          Our Priority
+        </h1>
+        <p>
+          Experience world-class healthcare with expert doctors, seamless
+          appointment scheduling, and personalized patient care.
+        </p>
+        <div className="hero-buttons">
+          <button className="primary-btn">Book Appointment</button>
+
+          <button className="secondary-btn">Find Doctors</button>
         </div>
-        <div className="banner">
-          <img src={imageUrl} alt="hero" className="animated-image" />
-          <span>
-            <img src="/Vector.png" alt="vector" />
-          </span>
+        <div className="hero-stats">
+          <div>
+            <h3>50+</h3>
+            <span>Doctors</span>
+          </div>
+
+          <div>
+            <h3>10k+</h3>
+            <span>Patients</span>
+          </div>
+
+          <div>
+            <h3>24/7</h3>
+            <span>Support</span>
+          </div>
+          <div>
+            <h3>15+</h3>
+            <span>Departments</span>
+          </div>
         </div>
       </div>
-    </>
+      <div className="banner">
+        <img src={imageUrl} alt="doctor" className="hero-image" />
+      </div>
+    </section>
   );
 };
 
