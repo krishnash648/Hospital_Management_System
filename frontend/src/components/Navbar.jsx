@@ -7,9 +7,7 @@ import { Context } from "../main";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
-
   const { isAuthenticated, setIsAuthenticated } = useContext(Context);
-
   const navigateTo = useNavigate();
 
   const handleLogout = async () => {
@@ -32,12 +30,10 @@ const Navbar = () => {
 
   return (
     <nav className="container">
-      {/* Logo */}
       <div className="logo">
         <img src="/logo.png" alt="Goldvalley Clinic" className="logo-img" />
       </div>
 
-      {/* Navigation */}
       <div className={show ? "navLinks showmenu" : "navLinks"}>
         <div className="links">
           <Link to="/" onClick={() => setShow(false)}>
@@ -51,9 +47,15 @@ const Navbar = () => {
           <Link to="/about" onClick={() => setShow(false)}>
             About Us
           </Link>
+
+          <Link to="/doctors" onClick={() => setShow(false)}>
+            Doctors
+          </Link>
+          <Link to="/departments" onClick={() => setShow(false)}>
+            Departments
+          </Link>
         </div>
 
-        {/* Actions */}
         {isAuthenticated ? (
           <button className="book-btn" onClick={handleLogout}>
             Logout
@@ -64,14 +66,13 @@ const Navbar = () => {
               Login
             </button>
 
-            <Link to="/appointment">
+            <Link to="/appointment" onClick={() => setShow(false)}>
               <button className="btn appointmentBtn">Book Appointment</button>
             </Link>
           </div>
         )}
       </div>
 
-      {/* Mobile Menu */}
       <div className="hamburger" onClick={() => setShow(!show)}>
         <GiHamburgerMenu />
       </div>
