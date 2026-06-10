@@ -52,7 +52,9 @@ const Footer = () => {
         </div>
 
         <div>
-          <h4>Departments</h4>
+          <h4>
+            <Link to="/departments">Departments</Link>
+          </h4>
 
           <ul>
             <li>Cardiology</li>
@@ -68,7 +70,7 @@ const Footer = () => {
 
           <div className="footer-contact">
             <FaPhoneAlt />
-            <span>+91 96644 80918</span>
+            <span>+91 96640 80019</span>
           </div>
 
           <div className="footer-contact">
