@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Hero = ({ imageUrl }) => {
   return (
@@ -17,9 +18,17 @@ const Hero = ({ imageUrl }) => {
           appointment scheduling, and personalized patient care.
         </p>
         <div className="hero-buttons">
-          <button className="primary-btn">Book Appointment</button>
+          <Link to="/appointment" className="primary-btn">
+            Book Appointment
+          </Link>
 
-          <button className="secondary-btn">Find Doctors</button>
+          <Link to="/doctors" className="secondary-btn">
+            Find Doctors
+          </Link>
+
+          <Link to="/departments" className="third-btn">
+            Explore Departments
+          </Link>
         </div>
         <div className="hero-stats">
           <div>
