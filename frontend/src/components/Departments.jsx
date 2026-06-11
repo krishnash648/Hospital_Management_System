@@ -62,21 +62,23 @@ const Departments = () => {
         </span>
       </div>
 
-      <Carousel responsive={responsive}>
-        {departmentsArray.map((department, index) => (
-          <div className="card" key={index}>
-            <img src={department.imageUrl} alt={department.name} />
+      <div className="departments-carousel">
+        <Carousel responsive={responsive}>
+          {departmentsArray.map((department, index) => (
+            <div className="card" key={index}>
+              <img src={department.imageUrl} alt={department.name} />
 
-            <div className="card-content">
-              <h3>{department.name}</h3>
+              <div className="card-content">
+                <h3>{department.name}</h3>
 
-              <p>{department.description}</p>
+                <p>{department.description}</p>
 
-              <button>Learn More</button>
+                <button>Learn More</button>
+              </div>
             </div>
-          </div>
-        ))}
-      </Carousel>
+          ))}
+        </Carousel>
+      </div>
     </section>
   );
 };
