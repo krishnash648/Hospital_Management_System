@@ -49,6 +49,9 @@ const Navbar = () => {
           <Link to="/about" onClick={() => setShow(false)}>
             About Us
           </Link>
+          <Link to="/contact" onClick={() => setShow(false)}>
+            Contact
+          </Link>
         </div>
 
         <div className="nav-actions">

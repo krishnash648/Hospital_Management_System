@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Appointment from "./pages/Appointment";
 import AboutUs from "./pages/AboutUs";
+import Contact from "./pages/Contact";
 import Register from "./pages/Register";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -54,6 +55,7 @@ const App = () => {
             path="/departments/:department"
             element={<DepartmentDetails />}
           />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
         <Footer />
         <ToastContainer position="top-center" />
