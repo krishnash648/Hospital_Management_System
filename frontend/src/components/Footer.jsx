@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import {
   FaFacebookF,
@@ -62,6 +61,7 @@ const Footer = () => {
             <li>Orthopedics</li>
             <li>Pediatrics</li>
             <li>Dermatology</li>
+            <li>And Many More</li>
           </ul>
         </div>
 

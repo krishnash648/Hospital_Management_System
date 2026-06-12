@@ -1,5 +1,5 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const Hero = ({ imageUrl }) => {
   return (
@@ -56,6 +56,10 @@ const Hero = ({ imageUrl }) => {
       </div>
     </section>
   );
+};
+
+Hero.propTypes = {
+  imageUrl: PropTypes.string.isRequired,
 };
 
 export default Hero;

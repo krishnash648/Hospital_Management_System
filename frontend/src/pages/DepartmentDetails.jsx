@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useParams } from "react-router-dom";
 
 const DepartmentDetails = () => {
@@ -115,6 +114,36 @@ const DepartmentDetails = () => {
         "Ear Surgery",
       ],
       doctors: ["Dr. Sophia Martinez", "Dr. Benjamin Hall", "Dr. Lucas King"],
+    },
+    oncology: {
+      title: "Oncology Department",
+      image: "/departments/oncology.png",
+      description:
+        "Comprehensive care for cancer patients, including diagnosis, treatment, and support services.",
+      services: [
+        "Chemotherapy",
+        "Radiation Therapy",
+        "Surgical Oncology",
+        "Hematology",
+        "Cancer Screening",
+        "Cancer Research",
+      ],
+      doctors: ["Dr. Mia Johnson", "Dr. Ethan Davis", "Dr. Grace Wilson"],
+    },
+    "physical-therapy": {
+      title: "Physical Therapy Department",
+      image: "/departments/physical.png",
+      description:
+        "Specialized care for injuries, disabilities, and rehabilitation using advanced physical therapy techniques and equipment.",
+      services: [
+        "Orthopedic Rehabilitation",
+        "Neurological Rehabilitation",
+        "Sports Injury Therapy",
+        "Musculoskeletal Rehabilitation",
+        "Rehabilitation Planning",
+        "Physical Rehabilitation",
+      ],
+      doctors: ["Dr. Amelia Harris", "Dr. Oliver Lewis", "Dr. Harper Scott"],
     },
   };
 

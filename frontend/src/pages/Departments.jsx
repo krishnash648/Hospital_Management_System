@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import {
   FaHeart,
@@ -116,7 +115,7 @@ const Departments = () => {
               <span>{department.doctors}</span>
 
               <Link
-                to={`/departments/${department.name.toLowerCase()}`}
+                to={`/departments/${department.name.toLowerCase().replace(/\s+/g, "-")}`}
                 className="department-btn"
               >
                 Learn More

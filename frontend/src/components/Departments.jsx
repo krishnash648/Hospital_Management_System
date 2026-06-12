@@ -1,6 +1,6 @@
-import React from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import { Link } from "react-router-dom";
 
 const Departments = () => {
   const departmentsArray = [
@@ -33,6 +33,21 @@ const Departments = () => {
       name: "Radiology",
       imageUrl: "/departments/radio.png",
       description: "Advanced medical imaging services.",
+    },
+    {
+      name: "ENT",
+      imageUrl: "/departments/ent.png",
+      description: "Ear, Nose, and Throat treatments.",
+    },
+    {
+      name: "Oncology",
+      imageUrl: "/departments/oncology.png",
+      description: "Cancer treatment and management.",
+    },
+    {
+      name: "Physical Therapy",
+      imageUrl: "/departments/physical.png",
+      description: "Rehabilitation and movement therapy.",
     },
   ];
 
@@ -73,7 +88,12 @@ const Departments = () => {
 
                 <p>{department.description}</p>
 
-                <button>Learn More</button>
+                <Link
+                  to={`/departments/${department.name.toLowerCase().replace(/\s+/g, "-")}`}
+                  className="learn-more-btn"
+                >
+                  Learn More
+                </Link>
               </div>
             </div>
           ))}

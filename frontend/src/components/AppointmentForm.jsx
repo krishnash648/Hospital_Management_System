@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 const AppointmentForm = () => {
@@ -16,8 +16,6 @@ const AppointmentForm = () => {
   const [doctorLastName, setDoctorLastName] = useState("");
   const [address, setAddress] = useState("");
   const [hasVisited, setHasVisited] = useState(false);
-
-  // Mock doctors array with random names and departments
   const mockDoctors = [
     {
       _id: "1",
@@ -87,8 +85,7 @@ const AppointmentForm = () => {
     "ENT",
   ];
 
-  // Replace mockDoctors with the data fetched from your backend in a real scenario
-  const [doctors, setDoctors] = useState(mockDoctors);
+  const [doctors] = useState(mockDoctors);
 
   const handleAppointment = async (e) => {
     e.preventDefault();
@@ -138,8 +135,6 @@ const AppointmentForm = () => {
   return (
     <section className="container appointment-section">
       <div className="appointment-wrapper">
-        {/* LEFT SIDE */}
-
         <div className="appointment-image">
           <img src="/appointment-doctor.png" alt="Doctor Consultation" />
 
@@ -160,8 +155,6 @@ const AppointmentForm = () => {
             </div>
           </div>
         </div>
-
-        {/* RIGHT SIDE */}
 
         <div className="appointment-form-area">
           <p className="section-tag">BOOK APPOINTMENT</p>

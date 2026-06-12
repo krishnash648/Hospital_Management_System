@@ -1,4 +1,3 @@
-import React from "react";
 import Hero from "../components/Hero";
 import AppointmentForm from "../components/AppointmentForm";
 
@@ -9,7 +8,7 @@ const Appointment = () => {
         title={"Schedule Your Appointment | Goldvalley Clinic"}
         imageUrl={"/signin.png"}
       />
-      <AppointmentForm/>
+      <AppointmentForm />
     </>
   );
 };

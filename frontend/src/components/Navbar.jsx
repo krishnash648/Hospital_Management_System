@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import axios from "axios";
@@ -7,11 +7,8 @@ import { Context } from "../main";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
-
   const { isAuthenticated, setIsAuthenticated } = useContext(Context);
-
   const navigateTo = useNavigate();
-
   const handleLogout = async () => {
     try {
       const res = await axios.get(
