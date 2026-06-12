@@ -1,5 +1,5 @@
-import React from "react";
 import { FaCheckCircle } from "react-icons/fa";
+import PropTypes from "prop-types";
 
 const Biography = ({ imageUrl }) => {
   return (
@@ -63,6 +63,10 @@ const Biography = ({ imageUrl }) => {
       </div>
     </section>
   );
+};
+
+Biography.propTypes = {
+  imageUrl: PropTypes.string.isRequired,
 };
 
 export default Biography;

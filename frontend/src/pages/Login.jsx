@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { Context } from "../main";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -77,7 +77,7 @@ const Login = () => {
               <button type="submit">Sign In</button>
 
               <p className="register-text">
-                Don't have an account?
+                Do not have an account?
                 <Link to="/register"> Register Now</Link>
               </p>
             </form>

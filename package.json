@@ -4,7 +4,8 @@
   "main": "index.js",
   "dependencies": {
     "daemon": "^1.1.0",
-    "init": "^0.1.2"
+    "init": "^0.1.2",
+    "prop-types": "^15.8.1"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

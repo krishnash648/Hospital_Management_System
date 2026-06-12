@@ -16,7 +16,7 @@
 
 body {
   background: #f8fafc;
-  
+
   color: var(--text-color);
   overflow-x: hidden;
 }
@@ -393,7 +393,7 @@ h6 {
   margin-bottom: 20px;
 }
 
-.departments .card-content button {
+.departments .card-content .learn-more-btn {
   background: #2563eb;
   color: white;
   border: none;
@@ -404,9 +404,11 @@ h6 {
   transition: 0.3s ease;
   margin-top: auto;
   align-self: flex-start;
+  text-decoration: none;
+  display: inline-block;
 }
 
-.departments .card-content button:hover {
+.departments .card-content .learn-more-btn:hover {
   background: #1d4ed8;
 }
 
