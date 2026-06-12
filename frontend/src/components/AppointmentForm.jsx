@@ -71,6 +71,60 @@ const AppointmentForm = () => {
       lastName: "Clark",
       doctorDepartment: "ENT",
     },
+    {
+      _id: "10",
+      firstName: "Max",
+      lastName: "Wilson",
+      doctorDepartment: "Cardiology",
+    },
+    {
+      _id: "11",
+      firstName: "Mamta",
+      lastName: "Sharma",
+      doctorDepartment: "Neurology",
+    },
+    {
+      _id: "12",
+      firstName: "Emily",
+      lastName: "Davis",
+      doctorDepartment: "Pediatrics",
+    },
+    {
+      _id: "13",
+      firstName: "James",
+      lastName: "Johnson",
+      doctorDepartment: "Orthopedics",
+    },
+    {
+      _id: "14",
+      firstName: "Olivia",
+      lastName: "Taylor",
+      doctorDepartment: "Dermatology",
+    },
+    {
+      _id: "15",
+      firstName: "Sheila",
+      lastName: "Mehta",
+      doctorDepartment: "Radiology",
+    },
+    {
+      _id: "16",
+      firstName: "Ashish",
+      lastName: "Kapoor",
+      doctorDepartment: "ENT",
+    },
+    {
+      _id: "17",
+      firstName: "Pradyuman",
+      lastName: "Sharma",
+      doctorDepartment: "Gynecology",
+    },
+    {
+      _id: "18",
+      firstName: "Kabir",
+      lastName: "Shah",
+      doctorDepartment: "Anesthesiologists",
+    },
   ];
 
   const departmentsArray = [
@@ -83,6 +137,8 @@ const AppointmentForm = () => {
     "Physical Therapy",
     "Dermatology",
     "ENT",
+    "Gynecology",
+    "Anesthesiologists",
   ];
 
   const [doctors] = useState(mockDoctors);
