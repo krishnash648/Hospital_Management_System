@@ -15,13 +15,11 @@ const DashboardHome = () => {
       <Sidebar />
 
       <div className="dashboard-content">
-        {/* Welcome */}
         <div className="welcome-card">
           <h1>Welcome Back, Krish 👋</h1>
           <p>Track appointments, reports, and your health journey.</p>
         </div>
 
-        {/* Stats */}
         <div className="dashboard-stats">
           <div className="stat-card">
             <FaCalendarCheck className="stat-icon" />
@@ -42,9 +40,7 @@ const DashboardHome = () => {
           </div>
         </div>
 
-        {/* Main Grid */}
         <div className="dashboard-grid">
-          {/* Upcoming Appointment */}
           <div className="dashboard-box">
             <h2>Upcoming Appointment</h2>
 
@@ -61,7 +57,6 @@ const DashboardHome = () => {
             </div>
           </div>
 
-          {/* Notifications */}
           <div className="dashboard-box">
             <h2>
               <FaBell /> Notifications
@@ -78,7 +73,6 @@ const DashboardHome = () => {
             </div>
           </div>
 
-          {/* Health Summary */}
           <div className="dashboard-box">
             <h2>
               <FaHeartbeat /> Health Summary
@@ -117,7 +111,6 @@ const DashboardHome = () => {
             </p>
           </div>
 
-          {/* Recent Prescriptions */}
           <div className="dashboard-box">
             <h2>
               <FaPills /> Prescriptions
@@ -130,7 +123,6 @@ const DashboardHome = () => {
             </ul>
           </div>
 
-          {/* Reports */}
           <div className="dashboard-box">
             <h2>
               <FaFileMedical /> Recent Reports
