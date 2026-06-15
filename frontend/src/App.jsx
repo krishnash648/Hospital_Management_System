@@ -13,6 +13,8 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { Context } from "./main";
 import Login from "./pages/Login";
+import Testimonials from "./pages/Testimonials";
+import FAQ from "./pages/FAQ";
 import Doctors from "./pages/Doctors";
 import Departments from "./pages/Departments";
 import DepartmentDetails from "./pages/DepartmentDetails";
@@ -55,6 +57,8 @@ const App = () => {
             path="/departments/:department"
             element={<DepartmentDetails />}
           />
+          <Route path="/testimonials" element={<Testimonials />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
         <Footer />

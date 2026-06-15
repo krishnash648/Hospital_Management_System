@@ -61,7 +61,7 @@ const Footer = () => {
             <li>Orthopedics</li>
             <li>Pediatrics</li>
             <li>Dermatology</li>
-            <li>And Many More</li>
+            <li>And More...</li>
           </ul>
         </div>
 

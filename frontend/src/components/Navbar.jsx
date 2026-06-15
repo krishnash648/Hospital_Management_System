@@ -1,3 +1,4 @@
+import { FaChevronDown } from "react-icons/fa";
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -46,12 +47,29 @@ const Navbar = () => {
             Appointment
           </Link>
 
-          <Link to="/about" onClick={() => setShow(false)}>
-            About Us
-          </Link>
-          <Link to="/contact" onClick={() => setShow(false)}>
-            Contact
-          </Link>
+          <div className="dropdown">
+            <span className="dropdown-title">
+              About Us
+              <FaChevronDown />
+            </span>
+
+            <div className="dropdown-menu">
+              <Link to="/about" onClick={() => setShow(false)}>
+                About Us
+              </Link>
+
+              <Link to="/testimonials" onClick={() => setShow(false)}>
+                Testimonials
+              </Link>
+
+              <Link to="/faq" onClick={() => setShow(false)}>
+                FAQ
+              </Link>
+              <Link to="/contact" onClick={() => setShow(false)}>
+                Contact
+              </Link>
+            </div>
+          </div>
         </div>
 
         <div className="nav-actions">
