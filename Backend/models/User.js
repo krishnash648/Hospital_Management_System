@@ -4,27 +4,22 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
-      trim: true,
+      required: true,
     },
 
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: true,
       unique: true,
-      lowercase: true,
-      trim: true,
     },
 
     password: {
       type: String,
-      required: [true, "Password is required"],
-      minlength: 6,
+      required: true,
     },
 
     phone: {
       type: String,
-      default: "",
     },
 
     role: {
@@ -32,10 +27,29 @@ const userSchema = new mongoose.Schema(
       enum: ["patient", "doctor", "admin"],
       default: "patient",
     },
+
+    specialization: {
+      type: String,
+    },
+
+    experience: {
+      type: Number,
+    },
+
+    fees: {
+      type: Number,
+    },
+
+    availability: {
+      type: [String],
+      default: [],
+    },
+
+    bio: {
+      type: String,
+    },
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
 const User = mongoose.model("User", userSchema);
