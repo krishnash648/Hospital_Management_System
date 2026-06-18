@@ -1,78 +1,89 @@
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import DashboardNavbar from "../components/DashboardNavbar";
+import API from "../services/api";
 
 const AppointmentHistory = () => {
+  const [historyAppointments, setHistoryAppointments] = useState([]);
+
+  useEffect(() => {
+    const fetchAppointmentHistory = async () => {
+      try {
+        const { data } = await API.get("/appointments/my");
+
+        const filteredHistory = data.filter(
+          (appointment) =>
+            appointment.status === "approved" ||
+            appointment.status === "completed" ||
+            appointment.status === "cancelled",
+        );
+
+        setHistoryAppointments(filteredHistory);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchAppointmentHistory();
+  }, []);
+
   return (
     <section className="dashboard-layout">
       <Sidebar />
 
-      <div className="dashboard-content">
-        <h1>Appointment History</h1>
-        <p>View your completed and past consultations.</p>
+      <div className="dashboard-main">
+        <DashboardNavbar />
 
-        <div className="table-wrapper">
-          <table className="appointments-table">
-            <thead>
-              <tr>
-                <th>Doctor</th>
-                <th>Department</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th>Prescription</th>
-                <th>Feedback</th>
-              </tr>
-            </thead>
+        <div className="dashboard-content">
+          <h1>Appointment History</h1>
+          <p>View your completed and past consultations.</p>
 
-            <tbody>
-              <tr>
-                <td>Dr. Sarah Wilson</td>
-                <td>Cardiology</td>
-                <td>10 June 2026</td>
-                <td>11:00 AM</td>
-                <td>
-                  <span className="status completed">Completed</span>
-                </td>
-                <td>
-                  <button className="table-btn">View</button>
-                </td>
-                <td>
-                  <button className="feedback-btn">Rate</button>
-                </td>
-              </tr>
+          <div className="table-wrapper">
+            {historyAppointments.length === 0 ? (
+              <p>No appointment history found.</p>
+            ) : (
+              <table className="appointments-table">
+                <thead>
+                  <tr>
+                    <th>Doctor</th>
+                    <th>Department</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Prescription</th>
+                    <th>Feedback</th>
+                  </tr>
+                </thead>
 
-              <tr>
-                <td>Dr. Michael Brown</td>
-                <td>Neurology</td>
-                <td>05 June 2026</td>
-                <td>03:00 PM</td>
-                <td>
-                  <span className="status cancelled">Cancelled</span>
-                </td>
-                <td>
-                  <button className="table-btn">View</button>
-                </td>
-                <td>
-                  <button className="feedback-btn">Rate</button>
-                </td>
-              </tr>
+                <tbody>
+                  {historyAppointments.map((appointment) => (
+                    <tr key={appointment._id}>
+                      <td>{appointment.doctor?.name || "N/A"}</td>
+                      <td>{appointment.department}</td>
+                      <td>{appointment.date?.split("T")[0]}</td>
+                      <td>{appointment.time}</td>
 
-              <tr>
-                <td>Dr. Olivia White</td>
-                <td>Orthopedics</td>
-                <td>01 June 2026</td>
-                <td>09:30 AM</td>
-                <td>
-                  <span className="status missed">Missed</span>
-                </td>
-                <td>
-                  <button className="table-btn">View</button>
-                </td>
-                <td>
-                  <button className="feedback-btn">Rate</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                      <td>
+                        <span
+                          className={`status ${appointment.status.toLowerCase()}`}
+                        >
+                          {appointment.status}
+                        </span>
+                      </td>
+
+                      <td>
+                        <button className="table-btn">View</button>
+                      </td>
+
+                      <td>
+                        <button className="feedback-btn">Rate</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
     </section>

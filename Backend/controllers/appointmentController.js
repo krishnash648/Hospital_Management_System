@@ -23,9 +23,13 @@ export const bookAppointment = async (req, res) => {
 // Patient gets own appointments
 export const getMyAppointments = async (req, res) => {
   try {
+    console.log("Logged in user ID:", req.user._id);
+
     const appointments = await Appointment.find({
       patient: req.user._id,
     }).populate("doctor", "name email role");
+
+    console.log("Appointments found:", appointments);
 
     res.status(200).json(appointments);
   } catch (error) {

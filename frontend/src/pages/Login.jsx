@@ -1,40 +1,34 @@
-import axios from "axios";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
-import { Context } from "../main";
+import { Context } from "../context/context";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 const Login = () => {
   const { isAuthenticated, setIsAuthenticated } = useContext(Context);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const navigateTo = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const { data } = await axios.post(
-        "http://localhost:4000/api/v1/user/login",
-        {
-          email,
-          password,
-          role: "Patient",
-        },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const { data } = await API.post("/auth/login", {
+        email,
+        password,
+      });
 
-      toast.success(data.message);
+      localStorage.setItem("token", data.token);
+      toast.success("Login successful");
       setIsAuthenticated(true);
       setEmail("");
       setPassword("");
       navigateTo("/");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login Failed");
+      toast.error(error.response?.data?.message || "Login failed");
     }
   };
 
@@ -49,12 +43,14 @@ const Login = () => {
           <div className="login-image">
             <img src="/signin.png" alt="Healthcare Login" />
           </div>
+
           <div className="login-content">
             <span className="login-badge">Secure Patient Portal</span>
+
             <h2>Welcome Back</h2>
+
             <p className="login-desc">
-              Sign in to manage appointments, connect with healthcare
-              professionals, and access your healthcare services securely.
+              Sign in to manage appointments and access healthcare services.
             </p>
 
             <form onSubmit={handleLogin}>

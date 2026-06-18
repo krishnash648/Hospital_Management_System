@@ -23,3 +23,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+backend/.env
+dashboard/.env
+frontend/.env

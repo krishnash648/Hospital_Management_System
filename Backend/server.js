@@ -1,12 +1,20 @@
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+
+console.log("SERVER ENV:", process.env.GROQ_API_KEY);
+
+import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import doctorRoutes from "./routes/doctorRoutes.js";
-
-dotenv.config();
+import adminRoutes from "./routes/adminRoutes.js";
+import healthRoutes from "./routes/healthRoutes.js";
+import prescriptionRoutes from "./routes/prescriptionRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
 connectDB();
 
@@ -18,6 +26,12 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/doctors", doctorRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/health", healthRoutes);
+app.use("/api/prescriptions", prescriptionRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("/", (req, res) => {
   res.send("API running...");

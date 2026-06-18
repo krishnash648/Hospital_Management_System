@@ -2,33 +2,49 @@ import { FaChevronDown } from "react-icons/fa";
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
-import axios from "axios";
 import { toast } from "react-toastify";
-import { Context } from "../main";
+import { Context } from "../context/context";
+import API from "../services/api";
 
 const Navbar = () => {
   const [show, setShow] = useState(false);
-  const { isAuthenticated, setIsAuthenticated } = useContext(Context);
+
+  const { isAuthenticated, setIsAuthenticated, setUser } = useContext(Context);
+
   const navigateTo = useNavigate();
+
   const handleLogout = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:4000/api/v1/user/patient/logout",
-        {
-          withCredentials: true,
-        },
-      );
+      await API.post("/auth/logout");
 
-      toast.success(res.data.message);
+      localStorage.removeItem("token");
+
       setIsAuthenticated(false);
+      setUser(null);
+
+      toast.success("Logged out successfully");
+
       navigateTo("/");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Logout Failed");
+      toast.error(err.response?.data?.message || "Logout failed");
     }
   };
 
   const goToLogin = () => {
     navigateTo("/login");
+  };
+
+  const goToDashboard = () => {
+    const token = localStorage.getItem("token");
+
+    console.log("Frontend token:", token);
+
+    if (!token) {
+      toast.error("Please login first");
+      return;
+    }
+
+    window.open("http://localhost:5174", "_self");
   };
 
   return (
@@ -47,10 +63,17 @@ const Navbar = () => {
             Appointment
           </Link>
 
+          <Link to="/doctors" onClick={() => setShow(false)}>
+            Doctors
+          </Link>
+
+          <Link to="/departments" onClick={() => setShow(false)}>
+            Departments
+          </Link>
+
           <div className="dropdown">
             <span className="dropdown-title">
-              About Us
-              <FaChevronDown />
+              About Us <FaChevronDown />
             </span>
 
             <div className="dropdown-menu">
@@ -65,6 +88,7 @@ const Navbar = () => {
               <Link to="/faq" onClick={() => setShow(false)}>
                 FAQ
               </Link>
+
               <Link to="/contact" onClick={() => setShow(false)}>
                 Contact
               </Link>
@@ -74,17 +98,23 @@ const Navbar = () => {
 
         <div className="nav-actions">
           {isAuthenticated ? (
-            <button className="btn appointmentBtn" onClick={handleLogout}>
-              Logout
-            </button>
+            <>
+              <button className="btn loginBtn" onClick={goToDashboard}>
+                Dashboard
+              </button>
+
+              <button className="btn appointmentBtn" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
           ) : (
             <>
               <button className="btn loginBtn" onClick={goToLogin}>
                 Login
               </button>
 
-              <Link to="/appointment" onClick={() => setShow(false)}>
-                <button className="btn appointmentBtn">Book Appointment</button>
+              <Link to="/register" onClick={() => setShow(false)}>
+                <button className="btn appointmentBtn">Register</button>
               </Link>
             </>
           )}
