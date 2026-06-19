@@ -28,3 +28,6 @@ dist-ssr
 backend/.env
 dashboard/.env
 frontend/.env
+
+Backend/uploads
+backend/uploads
