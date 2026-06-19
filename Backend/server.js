@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log("SERVER ENV:", process.env.GROQ_API_KEY);
-
+import path from "path";
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
@@ -34,6 +33,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/report-analysis", reportAnalyzeRoutes);
+app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {
   res.send("API running...");

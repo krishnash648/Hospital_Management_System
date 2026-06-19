@@ -12,6 +12,7 @@ import {
   FaUserMd,
   FaCalendarCheck,
   FaHospital,
+  FaEye,
 } from "react-icons/fa";
 
 const DashboardHome = () => {
@@ -282,7 +283,17 @@ const DashboardHome = () => {
                   {reports.map((report) => (
                     <li key={report._id}>
                       {report.title}
-                      <button>View</button>
+                      <button
+                        className="view-btn"
+                        onClick={() =>
+                          window.open(
+                            `http://localhost:5000${report.fileUrl}`,
+                            "_blank",
+                          )
+                        }
+                      >
+                        <FaEye /> View
+                      </button>
                     </li>
                   ))}
                 </ul>

@@ -17,15 +17,15 @@ const reportSchema = new mongoose.Schema(
       type: String,
     },
 
+    fileUrl: {
+      type: String,
+    },
+
     findings: {
       type: String,
     },
 
     doctorNotes: {
-      type: String,
-    },
-
-    fileUrl: {
       type: String,
     },
 

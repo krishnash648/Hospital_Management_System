@@ -22,7 +22,10 @@ export const analyzeReport = async (req, res) => {
     let extractedText = "";
 
     if (req.file.mimetype === "application/pdf") {
-      const dataBuffer = fs.readFileSync(req.file.path);
+      const filePath = req.file.path;
+      console.log("Reading file from:", filePath);
+
+      const dataBuffer = fs.readFileSync(filePath);
 
       console.log(pdfParse);
 
@@ -65,6 +68,7 @@ Keep it simple for patients.
       patient: req.user._id,
       title: req.file.originalname,
       reportType: req.file.mimetype,
+      fileUrl: `/uploads/${req.file.filename}`,
       findings: extractedText,
       analyzedResult: analysisResult,
     });

@@ -1,5 +1,5 @@
 import express from "express";
-import multer from "multer";
+import upload from "../middleware/uploadMiddleware.js";
 import {
   analyzeReport,
   getMyReports,
@@ -7,10 +7,6 @@ import {
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
-
-const upload = multer({
-  dest: "uploads/",
-});
 
 router.post("/analyze", protect, upload.single("report"), analyzeReport);
 
