@@ -2,7 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import DashboardNavbar from "../components/DashboardNavbar";
 import API from "../services/api";
-import { FaRobot, FaPaperPlane, FaHeartbeat } from "react-icons/fa";
+import {
+  FaRobot,
+  FaPaperPlane,
+  FaHeartbeat,
+  FaMicrophone,
+} from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 
 const getCurrentTime = () => {
@@ -33,7 +38,9 @@ Example:
 
 const AIHealthAssistant = () => {
   const [input, setInput] = useState("");
+  const [selectedSpecialist, setSelectedSpecialist] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
 
@@ -111,6 +118,35 @@ const AIHealthAssistant = () => {
     }
   };
 
+  const startListening = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      return alert("Speech Recognition is not supported in your browser.");
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-US";
+    recognition.start();
+
+    setIsListening(true);
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+    };
+  };
+
   const getDoctorRecommendation = (symptom) => {
     const text = symptom.toLowerCase();
 
@@ -129,6 +165,10 @@ const AIHealthAssistant = () => {
     const currentInput = input;
 
     const recommendedDoctor = getDoctorRecommendation(currentInput);
+
+    if (recommendedDoctor) {
+      setSelectedSpecialist(recommendedDoctor);
+    }
 
     const isEmergency = emergencyKeywords.some((keyword) =>
       currentInput.toLowerCase().includes(keyword),
@@ -190,7 +230,7 @@ Your symptoms may indicate a serious medical condition.
 ## 👨‍⚕ Recommended Specialist
 You should consider consulting a **${recommendedDoctor}** for these symptoms.
 
-You can book an appointment from the Appointment section.`
+Click below to book an appointment.`
           : data.reply,
         time: getCurrentTime(),
       };
@@ -227,6 +267,8 @@ You can book an appointment from the Appointment section.`
           time: getCurrentTime(),
         },
       ]);
+
+      setSelectedSpecialist("");
     } catch (error) {
       console.log(error);
     }
@@ -261,17 +303,18 @@ You can book an appointment from the Appointment section.`
                     <div className="chat-text">
                       <ReactMarkdown>{msg.text}</ReactMarkdown>
 
-                      {msg.text.includes("Recommended Specialist") && (
-                        <button
-                          className="book-now-btn"
-                          onClick={() =>
-                            (window.location.href =
-                              "http://localhost:5173/appointment")
-                          }
-                        >
-                          Book Appointment
-                        </button>
-                      )}
+                      {msg.text.includes("Recommended Specialist") &&
+                        selectedSpecialist && (
+                          <button
+                            className="book-now-btn"
+                            onClick={() =>
+                              (window.location.href = `http://localhost:5173/appointment?specialist=${selectedSpecialist}`)
+                            }
+                          >
+                            Book Appointment
+                          </button>
+                        )}
+
                       <div className="message-time">{msg.time}</div>
                     </div>
                   </div>
@@ -290,6 +333,13 @@ You can book an appointment from the Appointment section.`
               </div>
 
               <div className="chat-input-box">
+                <button
+                  type="button"
+                  className={`mic-btn ${isListening ? "listening" : ""}`}
+                  onClick={startListening}
+                >
+                  <FaMicrophone />
+                </button>
                 <input
                   type="text"
                   placeholder="Describe your symptoms..."

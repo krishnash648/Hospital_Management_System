@@ -15,6 +15,7 @@ import prescriptionRoutes from "./routes/prescriptionRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import reportAnalyzeRoutes from "./routes/reportAnalyzeRoutes.js";
 
 connectDB();
 
@@ -32,6 +33,7 @@ app.use("/api/prescriptions", prescriptionRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/report-analysis", reportAnalyzeRoutes);
 
 app.get("/", (req, res) => {
   res.send("API running...");

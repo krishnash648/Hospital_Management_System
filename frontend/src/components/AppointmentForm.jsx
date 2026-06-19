@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import API from "../services/api";
 
 const AppointmentForm = () => {
+  const [searchParams] = useSearchParams();
+  const specialist = searchParams.get("specialist");
+
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
   const [department, setDepartment] = useState("Cardiology");
@@ -22,6 +26,26 @@ const AppointmentForm = () => {
     "ENT",
   ];
 
+  // Auto-select department from AI recommendation
+  useEffect(() => {
+    if (!specialist) return;
+
+    const specialistMap = {
+      Neurologist: "Neurology",
+      Cardiologist: "Cardiology",
+      Pulmonologist: "Radiology",
+      Dermatologist: "Dermatology",
+      Gastroenterologist: "Oncology",
+      Orthopedic: "Orthopedics",
+      "General Physician": "Pediatrics",
+    };
+
+    if (specialistMap[specialist]) {
+      setDepartment(specialistMap[specialist]);
+    }
+  }, [specialist]);
+
+  // Fetch doctors
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
@@ -62,7 +86,6 @@ const AppointmentForm = () => {
 
       toast.success(data.message || "Appointment booked successfully");
 
-      // Reset form
       setAppointmentDate("");
       setAppointmentTime("");
       setDepartment("Cardiology");
@@ -85,6 +108,12 @@ const AppointmentForm = () => {
           <p className="section-tag">BOOK APPOINTMENT</p>
 
           <h2>Schedule Your Visit</h2>
+
+          {specialist && (
+            <p>
+              Recommended Specialist: <strong>{specialist}</strong>
+            </p>
+          )}
 
           <form onSubmit={handleAppointment}>
             <div className="form-row">
