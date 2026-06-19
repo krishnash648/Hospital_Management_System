@@ -59,7 +59,10 @@ export const getDoctorAppointments = async (req, res) => {
 
 export const approveAppointment = async (req, res) => {
   try {
-    const appointment = await Appointment.findById(req.params.id);
+    const appointment = await Appointment.findOne({
+      _id: req.params.id,
+      doctor: req.user._id,
+    });
 
     if (!appointment) {
       return res.status(404).json({
@@ -81,7 +84,10 @@ export const approveAppointment = async (req, res) => {
 
 export const rejectAppointment = async (req, res) => {
   try {
-    const appointment = await Appointment.findById(req.params.id);
+    const appointment = await Appointment.findOne({
+      _id: req.params.id,
+      doctor: req.user._id,
+    });
 
     if (!appointment) {
       return res.status(404).json({
@@ -89,11 +95,11 @@ export const rejectAppointment = async (req, res) => {
       });
     }
 
-    appointment.status = "rejected";
+    appointment.status = "cancelled";
     await appointment.save();
 
     res.status(200).json({
-      message: "Appointment rejected",
+      message: "Appointment cancelled",
       appointment,
     });
   } catch (error) {

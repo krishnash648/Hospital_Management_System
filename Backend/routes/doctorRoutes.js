@@ -30,7 +30,7 @@ router.put("/appointments/:id/reject", protect, doctorOnly, rejectAppointment);
 
 router.put("/reports/:id/notes", protect, doctorOnly, addDoctorNotes);
 
-router.post("/prescriptions/create", protect, doctorOnly, createPrescription);
+router.post("/prescriptions", protect, doctorOnly, createPrescription);
 
 router.get("/:id", getDoctorById);
 
