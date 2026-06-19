@@ -14,7 +14,7 @@ const MedicalReports = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const { data } = await API.get("/appointments/my");
+        const { data } = await API.get("/report-analysis/my");
 
         const completedReports = data.filter(
           (appointment) =>

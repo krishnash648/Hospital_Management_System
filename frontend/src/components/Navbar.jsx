@@ -16,18 +16,20 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await API.post("/auth/logout");
-
-      localStorage.removeItem("token");
-
-      setIsAuthenticated(false);
-      setUser(null);
-
-      toast.success("Logged out successfully");
-
-      navigateTo("/");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Logout failed");
+      console.log("Logout API error:", err);
     }
+
+    // Always clear client auth
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    setIsAuthenticated(false);
+    setUser(null);
+
+    toast.success("Logged out successfully");
+
+    window.location.href = "http://localhost:5173/login";
   };
 
   const goToLogin = () => {
@@ -37,14 +39,12 @@ const Navbar = () => {
   const goToDashboard = () => {
     const token = localStorage.getItem("token");
 
-    console.log("Frontend token:", token);
-
     if (!token) {
       toast.error("Please login first");
       return;
     }
 
-    window.open("http://localhost:5174", "_self");
+    window.location.href = `http://localhost:5174?token=${token}`;
   };
 
   return (

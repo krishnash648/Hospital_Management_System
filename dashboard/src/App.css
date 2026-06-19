@@ -95,7 +95,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* Main content */
 .dashboard-content {
   margin-left: 260px;
   width: calc(100% - 260px);
@@ -113,7 +112,6 @@ body {
   color: #475569;
 }
 
-/* Welcome card */
 .welcome-card {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
@@ -132,7 +130,6 @@ body {
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* Stats */
 .dashboard-stats {
   display: flex;
   gap: 18px;
@@ -165,14 +162,12 @@ body {
   margin-bottom: 12px;
 }
 
-/* Dashboard Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
 }
 
-/* Dashboard cards */
 .dashboard-box {
   background: white;
   padding: 22px;
@@ -201,7 +196,6 @@ body {
   color: #2563eb;
 }
 
-/* Lists */
 .dashboard-list {
   list-style: none;
 }
@@ -227,7 +221,6 @@ body {
   cursor: pointer;
 }
 
-/* Appointment card */
 .appointment-card {
   margin-top: 20px;
   padding: 22px;
@@ -280,7 +273,6 @@ body {
   background: #ffe4e6;
 }
 
-/* Status badge */
 .status.upcoming {
   display: inline-block;
   margin-top: 15px;
@@ -1263,4 +1255,65 @@ body {
 
 .download-btn:hover {
   background: #e5e7eb;
+}
+.Toastify__toast {
+  border-radius: 12px;
+  font-weight: 500;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.Toastify__toast--success {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+}
+
+.Toastify__toast--error {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  color: black !important;
+}
+
+.Toastify__progress-bar {
+  height: 4px;
+}
+
+.Toastify__close-button {
+  opacity: 1;
+}
+
+body.dark-mode {
+  background: #0f172a;
+  color: white;
+}
+
+body.dark-mode .dashboard-main {
+  background: #111827;
+}
+
+body.dark-mode .settings-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+body.dark-mode input {
+  background: #0f172a;
+  color: white;
+  border: 1px solid #475569;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode p,
+body.dark-mode label {
+  color: white;
+}
+
+body.compact-mode .settings-card {
+  padding: 16px;
+}
+
+body.compact-mode .settings-form input {
+  padding: 10px;
+}
+
+body.compact-mode .toggle-group label {
+  padding: 8px 0;
 }

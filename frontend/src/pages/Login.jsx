@@ -22,7 +22,11 @@ const Login = () => {
       });
 
       localStorage.setItem("token", data.token);
-      toast.success("Login successful");
+
+      toast.success("Login successful", {
+        theme: "colored",
+      });
+
       setIsAuthenticated(true);
       setEmail("");
       setPassword("");
@@ -57,6 +61,7 @@ const Login = () => {
               <input
                 type="email"
                 placeholder="Email Address"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -65,10 +70,16 @@ const Login = () => {
               <input
                 type="password"
                 placeholder="Password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+
+              {/* Forgot Password Link */}
+              <div className="forgot-password">
+                <Link to="/forgot-password">Forgot Password?</Link>
+              </div>
 
               <button type="submit">Sign In</button>
 

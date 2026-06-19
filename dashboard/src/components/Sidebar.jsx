@@ -8,8 +8,33 @@ import {
   FaRobot,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { useContext } from "react";
+import { Context } from "../context/context";
+import API from "../services/api";
+import { toast } from "react-toastify";
 
 const Sidebar = () => {
+  const { setIsAuthenticated, setUser } = useContext(Context);
+
+  const handleLogout = async () => {
+    try {
+      await API.post("/auth/logout");
+    } catch (err) {
+      console.log("Logout API error:", err);
+    }
+
+    // Always clear client auth
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    setIsAuthenticated(false);
+    setUser(null);
+
+    toast.success("Logged out successfully");
+
+    window.location.href = "http://localhost:5173/login";
+  };
+
   return (
     <div className="sidebar">
       <div>
@@ -55,7 +80,7 @@ const Sidebar = () => {
       </div>
 
       <div className="sidebar-logout">
-        <button className="logout-btn">
+        <button className="logout-btn" onClick={handleLogout}>
           <FaSignOutAlt /> Logout
         </button>
       </div>

@@ -35,7 +35,7 @@ const DashboardHome = () => {
   const fetchHealth = useCallback(async () => {
     try {
       const { data } = await API.get("/health/my");
-      setHealthData(data[0]);
+      setHealthData(data?.length ? data[0] : null);
     } catch (error) {
       console.log(error);
     }

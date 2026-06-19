@@ -1,6 +1,12 @@
 import { FaArrowLeft, FaUserCircle } from "react-icons/fa";
+import { useState } from "react";
 
 const DashboardNavbar = () => {
+  const [user] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
   const goBackToWebsite = () => {
     window.location.href = "http://localhost:5173";
   };
@@ -22,7 +28,7 @@ const DashboardNavbar = () => {
 
         <div className="profile-box">
           <FaUserCircle />
-          <span>Patient</span>
+          <span>{user?.name || "Patient"}</span>
         </div>
       </div>
     </header>

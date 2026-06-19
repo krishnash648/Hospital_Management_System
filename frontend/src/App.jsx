@@ -15,7 +15,8 @@ import Departments from "./pages/Departments";
 import DepartmentDetails from "./pages/DepartmentDetails";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
-
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Context } from "./context/context";
@@ -42,6 +43,8 @@ const App = () => {
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
 
       <Footer />

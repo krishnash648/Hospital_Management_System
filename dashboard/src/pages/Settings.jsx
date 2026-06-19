@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import DashboardNavbar from "../components/DashboardNavbar";
 import { FaUserEdit, FaLock, FaBell, FaMoon } from "react-icons/fa";
@@ -17,6 +17,39 @@ const Settings = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [notifications, setNotifications] = useState(
+    user?.notificationPreferences || {
+      appointmentAlerts: true,
+      medicalReports: true,
+      aiSuggestions: false,
+    },
+  );
+
+  const [appearance, setAppearance] = useState(
+    user?.appearanceSettings || {
+      darkMode: false,
+      compactLayout: false,
+    },
+  );
+
+  // Apply Dark Mode instantly
+  useEffect(() => {
+    if (appearance.darkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [appearance.darkMode]);
+
+  // Apply Compact Mode instantly
+  useEffect(() => {
+    if (appearance.compactLayout) {
+      document.body.classList.add("compact-mode");
+    } else {
+      document.body.classList.remove("compact-mode");
+    }
+  }, [appearance.compactLayout]);
+
   const handleProfileUpdate = async () => {
     try {
       const { data } = await API.put("/auth/profile", {
@@ -26,13 +59,20 @@ const Settings = () => {
       });
 
       setUser(data);
-      toast.success("Profile updated successfully");
+
+      toast.success("✅ Profile updated successfully!", {
+        theme: "colored",
+      });
     } catch (error) {
       toast.error(error.response?.data?.message || "Profile update failed");
     }
   };
 
   const handlePasswordUpdate = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return toast.error("All password fields are required");
+    }
+
     if (newPassword !== confirmPassword) {
       return toast.error("Passwords do not match");
     }
@@ -43,7 +83,9 @@ const Settings = () => {
         newPassword,
       });
 
-      toast.success("Password updated successfully");
+      toast.success("🔒 Password updated successfully!", {
+        theme: "colored",
+      });
 
       setCurrentPassword("");
       setNewPassword("");
@@ -51,6 +93,43 @@ const Settings = () => {
     } catch (error) {
       toast.error(error.response?.data?.message || "Password update failed");
     }
+  };
+
+  const savePreferences = async (updatedNotifications, updatedAppearance) => {
+    try {
+      await API.put("/auth/preferences", {
+        notificationPreferences: updatedNotifications,
+        appearanceSettings: updatedAppearance,
+      });
+
+      toast.success("⚙️ Preferences updated successfully!", {
+        theme: "colored",
+      });
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update preferences",
+      );
+    }
+  };
+
+  const handleNotificationChange = async (field) => {
+    const updated = {
+      ...notifications,
+      [field]: !notifications[field],
+    };
+
+    setNotifications(updated);
+    await savePreferences(updated, appearance);
+  };
+
+  const handleAppearanceChange = async (field) => {
+    const updated = {
+      ...appearance,
+      [field]: !appearance[field],
+    };
+
+    setAppearance(updated);
+    await savePreferences(notifications, updated);
   };
 
   return (
@@ -67,15 +146,23 @@ const Settings = () => {
           </div>
 
           <div className="settings-grid">
+            {/* Profile */}
             <div className="settings-card">
               <h2>
                 <FaUserEdit /> Profile Information
               </h2>
 
-              <div className="settings-form">
+              <form
+                className="settings-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleProfileUpdate();
+                }}
+              >
                 <input
                   type="text"
                   placeholder="Full Name"
+                  autoComplete="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -83,6 +170,7 @@ const Settings = () => {
                 <input
                   type="email"
                   placeholder="Email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -90,25 +178,43 @@ const Settings = () => {
                 <input
                   type="tel"
                   placeholder="Phone Number"
+                  autoComplete="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                 />
 
-                <button className="save-btn" onClick={handleProfileUpdate}>
+                <button type="submit" className="save-btn">
                   Save Changes
                 </button>
-              </div>
+              </form>
             </div>
 
+            {/* Password */}
             <div className="settings-card">
               <h2>
                 <FaLock /> Change Password
               </h2>
 
-              <div className="settings-form">
+              <form
+                className="settings-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handlePasswordUpdate();
+                }}
+              >
+                <input
+                  type="email"
+                  name="email"
+                  autoComplete="username"
+                  value={email}
+                  readOnly
+                  hidden
+                />
+
                 <input
                   type="password"
                   placeholder="Current Password"
+                  autoComplete="current-password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                 />
@@ -116,6 +222,7 @@ const Settings = () => {
                 <input
                   type="password"
                   placeholder="New Password"
+                  autoComplete="new-password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
@@ -123,16 +230,18 @@ const Settings = () => {
                 <input
                   type="password"
                   placeholder="Confirm New Password"
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
 
-                <button className="save-btn" onClick={handlePasswordUpdate}>
+                <button type="submit" className="save-btn">
                   Update Password
                 </button>
-              </div>
+              </form>
             </div>
 
+            {/* Notifications */}
             <div className="settings-card">
               <h2>
                 <FaBell /> Notification Preferences
@@ -141,21 +250,36 @@ const Settings = () => {
               <div className="toggle-group">
                 <label>
                   Appointment Alerts
-                  <input type="checkbox" defaultChecked />
+                  <input
+                    type="checkbox"
+                    checked={notifications.appointmentAlerts}
+                    onChange={() =>
+                      handleNotificationChange("appointmentAlerts")
+                    }
+                  />
                 </label>
 
                 <label>
                   Medical Report Updates
-                  <input type="checkbox" defaultChecked />
+                  <input
+                    type="checkbox"
+                    checked={notifications.medicalReports}
+                    onChange={() => handleNotificationChange("medicalReports")}
+                  />
                 </label>
 
                 <label>
                   AI Health Suggestions
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={notifications.aiSuggestions}
+                    onChange={() => handleNotificationChange("aiSuggestions")}
+                  />
                 </label>
               </div>
             </div>
 
+            {/* Appearance */}
             <div className="settings-card">
               <h2>
                 <FaMoon /> Appearance
@@ -164,12 +288,20 @@ const Settings = () => {
               <div className="toggle-group">
                 <label>
                   Dark Mode
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={appearance.darkMode}
+                    onChange={() => handleAppearanceChange("darkMode")}
+                  />
                 </label>
 
                 <label>
                   Compact Layout
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={appearance.compactLayout}
+                    onChange={() => handleAppearanceChange("compactLayout")}
+                  />
                 </label>
               </div>
             </div>

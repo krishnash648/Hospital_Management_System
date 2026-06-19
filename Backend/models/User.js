@@ -18,6 +18,14 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    resetPasswordToken: {
+      type: String,
+    },
+
+    resetPasswordExpire: {
+      type: Date,
+    },
+
     phone: {
       type: String,
     },
@@ -47,6 +55,35 @@ const userSchema = new mongoose.Schema(
 
     bio: {
       type: String,
+    },
+
+    notificationPreferences: {
+      appointmentAlerts: {
+        type: Boolean,
+        default: true,
+      },
+
+      medicalReports: {
+        type: Boolean,
+        default: true,
+      },
+
+      aiSuggestions: {
+        type: Boolean,
+        default: false,
+      },
+    },
+
+    appearanceSettings: {
+      darkMode: {
+        type: Boolean,
+        default: false,
+      },
+
+      compactLayout: {
+        type: Boolean,
+        default: false,
+      },
     },
   },
   { timestamps: true },

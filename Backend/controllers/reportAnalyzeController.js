@@ -1,14 +1,17 @@
 import fs from "fs";
 import { createRequire } from "module";
 import OpenAI from "openai";
+import Report from "../models/Report.js";
 
 const require = createRequire(import.meta.url);
-const { PDFParse } = require("pdf-parse");
+const pdfParse = require("pdf-parse");
 
 export const analyzeReport = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
+      return res.status(400).json({
+        message: "No file uploaded",
+      });
     }
 
     const client = new OpenAI({
@@ -20,8 +23,11 @@ export const analyzeReport = async (req, res) => {
 
     if (req.file.mimetype === "application/pdf") {
       const dataBuffer = fs.readFileSync(req.file.path);
-      const parser = new PDFParse({ data: dataBuffer });
-      const result = await parser.getText();
+
+      console.log(pdfParse);
+
+      const result = await pdfParse(dataBuffer);
+
       extractedText = result.text;
     } else {
       extractedText =
@@ -46,15 +52,49 @@ Analyze the report and return:
 Keep it simple for patients.
 `,
         },
-        { role: "user", content: extractedText },
+        {
+          role: "user",
+          content: extractedText,
+        },
       ],
     });
 
+    const analysisResult = completion.choices[0].message.content;
+
+    const newReport = await Report.create({
+      patient: req.user._id,
+      title: req.file.originalname,
+      reportType: req.file.mimetype,
+      findings: extractedText,
+      analyzedResult: analysisResult,
+    });
+
     res.status(200).json({
-      analysis: completion.choices[0].message.content,
+      message: "Report analyzed successfully",
+      report: newReport,
+      analysis: analysisResult,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Failed to analyze report" });
+
+    res.status(500).json({
+      message: "Failed to analyze report",
+    });
+  }
+};
+
+export const getMyReports = async (req, res) => {
+  try {
+    const reports = await Report.find({
+      patient: req.user._id,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(reports);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Failed to fetch reports",
+    });
   }
 };
