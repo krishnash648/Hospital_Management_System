@@ -63,13 +63,16 @@ body {
 }
 
 .sidebar ul li a.active {
-  background: rgba(37, 99, 235, 0.15);
-  border-left: 3px solid #2563eb;
+  background: #1e40af;
+  color: white;
+  border-left: 4px solid #60a5fa;
+  transform: translateX(4px);
 }
 
 .sidebar-logout {
   margin-top: auto;
-  padding-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .logout-btn {
@@ -96,8 +99,6 @@ body {
 }
 
 .dashboard-content {
-  margin-left: 260px;
-  width: calc(100% - 260px);
   padding: 40px;
 }
 
@@ -148,7 +149,8 @@ body {
 }
 
 .stat-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 35px rgba(37, 99, 235, 0.12);
 }
 
 .stat-card h2 {
@@ -955,7 +957,9 @@ body {
 }
 
 .dashboard-main {
-  flex: 1;
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -966,8 +970,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 30px;
-  border-bottom: 1px solid #ddd;
+  padding: 0 40px;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .dashboard-logo {
@@ -990,6 +997,7 @@ body {
 }
 
 .profile-box {
+  background: #a9b5d1;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1316,4 +1324,18 @@ body.compact-mode .settings-form input {
 
 body.compact-mode .toggle-group label {
   padding: 8px 0;
+}
+
+.profile-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.profile-box svg {
+  font-size: 20px;
+  color: #2563eb;
 }

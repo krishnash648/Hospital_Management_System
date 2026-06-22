@@ -62,7 +62,7 @@ const DashboardHome = () => {
 
   useEffect(() => {
     const loadDashboardData = async () => {
-      await Promise.all([
+      await Promise.allSettled([
         fetchAppointments(),
         fetchHealth(),
         fetchPrescriptions(),
@@ -84,17 +84,26 @@ const DashboardHome = () => {
     }
   };
 
-  const upcomingAppointment = appointments[0];
+  // Better upcoming appointment logic
+  const upcomingAppointment = appointments.find(
+    (appointment) =>
+      appointment.status === "pending" || appointment.status === "approved",
+  );
 
+  // Stats
   const totalAppointments = appointments.length;
 
-  const approvedAppointments = appointments.filter(
-    (appointment) => appointment.status === "approved",
+  const upcomingCount = appointments.filter(
+    (appointment) =>
+      appointment.status === "pending" || appointment.status === "approved",
   ).length;
 
-  const pendingAppointments = appointments.filter(
-    (appointment) => appointment.status === "pending",
+  const completedAppointments = appointments.filter(
+    (appointment) => appointment.status === "completed",
   ).length;
+
+  // Doctor notes only
+  const doctorNotes = reports.filter((report) => report.doctorNotes);
 
   return (
     <section className="dashboard-layout">
@@ -104,6 +113,7 @@ const DashboardHome = () => {
         <DashboardNavbar />
 
         <div className="dashboard-content">
+          {/* Welcome */}
           <div className="welcome-card">
             <h1>Welcome Back 👋</h1>
             <p>Track appointments, reports, and your health journey.</p>
@@ -113,13 +123,13 @@ const DashboardHome = () => {
           <div className="dashboard-stats">
             <div className="stat-card">
               <FaCalendarCheck className="stat-icon" />
-              <h2>{pendingAppointments}</h2>
+              <h2>{upcomingCount}</h2>
               <p>Upcoming Appointments</p>
             </div>
 
             <div className="stat-card">
               <FaHospital className="stat-icon" />
-              <h2>{approvedAppointments}</h2>
+              <h2>{completedAppointments}</h2>
               <p>Completed Visits</p>
             </div>
 
@@ -209,13 +219,18 @@ const DashboardHome = () => {
                     <div className="progress-bar">
                       <div
                         className="progress-fill"
-                        style={{ width: `${healthData.weight}%` }}
+                        style={{
+                          width: `${Math.min(
+                            (healthData.weight / 120) * 100,
+                            100,
+                          )}%`,
+                        }}
                       />
                     </div>
                   </div>
 
                   <div className="health-item">
-                    <p>Hydration</p>
+                    <p>Hydration ({healthData.hydration}%)</p>
                     <div className="progress-bar">
                       <div
                         className="progress-fill"
@@ -225,7 +240,9 @@ const DashboardHome = () => {
                   </div>
 
                   <div className="health-item">
-                    <p>Heart Rate Stability</p>
+                    <p>
+                      Heart Rate Stability ({healthData.heartRateStability}%)
+                    </p>
                     <div className="progress-bar">
                       <div
                         className="progress-fill"
@@ -237,7 +254,7 @@ const DashboardHome = () => {
                   </div>
 
                   <div className="health-item">
-                    <p>Sleep Quality</p>
+                    <p>Sleep Quality ({healthData.sleepQuality}%)</p>
                     <div className="progress-bar">
                       <div
                         className="progress-fill"
@@ -283,6 +300,7 @@ const DashboardHome = () => {
                   {reports.map((report) => (
                     <li key={report._id}>
                       {report.title}
+
                       <button
                         className="view-btn"
                         onClick={() =>
@@ -308,9 +326,9 @@ const DashboardHome = () => {
                 <FaUserMd /> Doctor Notes
               </h2>
 
-              {reports.length > 0 ? (
+              {doctorNotes.length > 0 ? (
                 <ul className="dashboard-list">
-                  {reports.map((report) => (
+                  {doctorNotes.map((report) => (
                     <li key={report._id}>{report.doctorNotes}</li>
                   ))}
                 </ul>

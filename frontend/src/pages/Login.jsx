@@ -22,15 +22,28 @@ const Login = () => {
       });
 
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userName", data.name);
+      localStorage.setItem("role", data.role);
+
+      if (data.role === "doctor") {
+        localStorage.setItem("doctorName", data.name);
+      }
 
       toast.success("Login successful", {
         theme: "colored",
       });
 
       setIsAuthenticated(true);
+
       setEmail("");
       setPassword("");
-      navigateTo("/");
+
+      if (data.role === "doctor") {
+        localStorage.setItem("doctorToken", data.token);
+        window.location.href = `http://localhost:5175/?token=${data.token}&name=${data.name}`;
+      } else {
+        navigateTo("/");
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     }
@@ -76,7 +89,6 @@ const Login = () => {
                 required
               />
 
-              {/* Forgot Password Link */}
               <div className="forgot-password">
                 <Link to="/forgot-password">Forgot Password?</Link>
               </div>

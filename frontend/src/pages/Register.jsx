@@ -11,6 +11,8 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("patient");
+  const [specialization, setSpecialization] = useState("");
 
   const navigateTo = useNavigate();
 
@@ -23,10 +25,14 @@ const Register = () => {
         email,
         phone,
         password,
-        role: "patient",
+        role,
+        specialization: role === "doctor" ? specialization : "",
       });
 
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userName", data.name);
+      localStorage.setItem("role", data.role);
+
       toast.success("Registration successful");
       setIsAuthenticated(true);
 
@@ -34,8 +40,17 @@ const Register = () => {
       setEmail("");
       setPhone("");
       setPassword("");
+      setRole("patient");
+      setSpecialization("");
 
-      navigateTo("/");
+      if (data.role === "doctor") {
+        localStorage.setItem("doctorToken", data.token);
+        localStorage.setItem("doctorName", data.name);
+
+        window.location.href = `http://localhost:5175?token=${data.token}&name=${data.name}`;
+      } else {
+        navigateTo("/");
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
     }
@@ -50,11 +65,11 @@ const Register = () => {
       <div className="container">
         <div className="login-card register-card">
           <div className="login-image">
-            <img src="/register.png" alt="Patient Registration" />
+            <img src="/register.png" alt="Registration" />
           </div>
 
           <div className="login-content">
-            <span className="login-badge">Create Patient Account</span>
+            <span className="login-badge">Create Account</span>
 
             <h2>Create Account</h2>
 
@@ -94,6 +109,26 @@ const Register = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+
+              <div className="select-wrapper">
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
+                  <option value="patient">Patient</option>
+                  <option value="doctor">Doctor</option>
+                </select>
+              </div>
+              {role === "doctor" && (
+                <input
+                  type="text"
+                  placeholder="Specialization"
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.target.value)}
+                  required
+                />
+              )}
 
               <button type="submit">Create Account</button>
 

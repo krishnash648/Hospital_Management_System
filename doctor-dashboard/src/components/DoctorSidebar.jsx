@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   FaHome,
   FaCalendarCheck,
@@ -12,16 +12,15 @@ import { toast } from "react-toastify";
 
 const DoctorSidebar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("doctorToken");
     localStorage.removeItem("doctorName");
 
     toast.success("Logged out successfully");
 
     setTimeout(() => {
-      navigate("/login");
+      window.location.href = "http://localhost:5173/login";
     }, 1000);
   };
 

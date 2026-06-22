@@ -2788,3 +2788,42 @@ footer .logo-img {
 .Toastify__close-button {
   opacity: 1;
 }
+
+/* Role Select Styling */
+.login-content select {
+  width: 100%;
+  height: 60px;
+  border: 1px solid #dbe2ea;
+  border-radius: 14px;
+  padding: 0 18px;
+  font-size: 15px;
+  outline: none;
+  background: #ffffff;
+  color: #0f172a;
+  cursor: pointer;
+  appearance: none;
+  transition: all 0.3s ease;
+}
+
+/* Focus effect */
+.login-content select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+/* Dropdown arrow */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-wrapper::after {
+  content: "⌄";
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #64748b;
+  pointer-events: none;
+}
