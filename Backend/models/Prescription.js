@@ -7,18 +7,36 @@ const prescriptionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
     doctor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    medicines: [
-      {
-        name: String,
-        dosage: String,
-      },
-    ],
-    notes: String,
+
+    medicineName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    dosage: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    duration: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    notes: {
+      type: String,
+      trim: true,
+      default: "",
+    },
   },
   { timestamps: true },
 );

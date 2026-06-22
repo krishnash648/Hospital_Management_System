@@ -1324,3 +1324,49 @@ body.compact-mode .settings-form input {
 body.compact-mode .toggle-group label {
   padding: 8px 0;
 }
+
+/* Patient Records */
+.patient-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.patient-email {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.visit-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.latest-visit {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.settings-form select,
+.settings-form textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  outline: none;
+  font-size: 15px;
+}
+
+.settings-form textarea {
+  resize: none;
+  min-height: 120px;
+}
+
+.settings-form select:focus,
+.settings-form textarea:focus {
+  border-color: #2563eb;
+}

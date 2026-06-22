@@ -46,6 +46,7 @@ const DashboardHome = () => {
     try {
       const { data } = await API.get("/prescriptions/my");
       setPrescriptions(data);
+      console.log("asdlsd", data);
     } catch (error) {
       console.log(error);
     }
@@ -281,14 +282,16 @@ const DashboardHome = () => {
               {prescriptions.length > 0 ? (
                 <ul className="dashboard-list">
                   {prescriptions.map((prescription) => (
-                    <li key={prescription._id}>{prescription.medicineName}</li>
+                    <li key={prescription._id}>
+                      <p>Medicine:</p>
+                      <strong>{prescription.medicineName}</strong>
+                    </li>
                   ))}
                 </ul>
               ) : (
                 <p>No prescriptions available.</p>
               )}
             </div>
-
             {/* Recent Reports */}
             <div className="dashboard-box">
               <h2>
