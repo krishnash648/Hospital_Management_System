@@ -1370,3 +1370,19 @@ body.compact-mode .toggle-group label {
 .settings-form textarea:focus {
   border-color: #2563eb;
 }
+
+.report-notes {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 15px;
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  resize: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.report-notes:focus {
+  border-color: #2563eb;
+}
