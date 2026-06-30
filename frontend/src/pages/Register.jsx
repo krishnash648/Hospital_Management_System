@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { Context } from "../context/context";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import API from "../services/api";
 
 const Register = () => {
-  const { isAuthenticated, setIsAuthenticated } = useContext(Context);
+  const { setIsAuthenticated } = useContext(Context);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -13,8 +13,6 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("patient");
   const [specialization, setSpecialization] = useState("");
-
-  const navigateTo = useNavigate();
 
   const handleRegistration = async (e) => {
     e.preventDefault();
@@ -29,9 +27,25 @@ const Register = () => {
         specialization: role === "doctor" ? specialization : "",
       });
 
+      localStorage.clear();
+
+      if (data.role === "doctor") {
+        localStorage.setItem("doctorToken", data.token);
+        localStorage.setItem("doctorName", data.name);
+        localStorage.setItem("role", "doctor");
+
+        toast.success("Registration successful");
+
+        window.location.replace(
+          `http://localhost:5175/?token=${data.token}&name=${encodeURIComponent(data.name)}`,
+        );
+
+        return;
+      }
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("userName", data.name);
-      localStorage.setItem("role", data.role);
+      localStorage.setItem("role", "patient");
 
       toast.success("Registration successful");
       setIsAuthenticated(true);
@@ -43,22 +57,14 @@ const Register = () => {
       setRole("patient");
       setSpecialization("");
 
-      if (data.role === "doctor") {
-        localStorage.setItem("doctorToken", data.token);
-        localStorage.setItem("doctorName", data.name);
-
-        window.location.href = `http://localhost:5175?token=${data.token}&name=${data.name}`;
-      } else {
-        navigateTo("/");
-      }
+      // Redirect patient to patient dashboard with token in URL
+      window.location.replace(
+        `http://localhost:5174/?token=${data.token}&name=${encodeURIComponent(data.name)}`,
+      );
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
     }
   };
-
-  if (isAuthenticated) {
-    return <Navigate to="/" />;
-  }
 
   return (
     <section className="login-section">

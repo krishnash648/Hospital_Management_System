@@ -4,6 +4,7 @@ import {
   getDoctorById,
   getDoctorsByDepartment,
   getDoctorAppointments,
+  getDoctorReports,
   approveAppointment,
   rejectAppointment,
   addDoctorNotes,
@@ -18,6 +19,9 @@ router.get("/", getAllDoctors);
 router.get("/department/:department", getDoctorsByDepartment);
 
 router.get("/my-appointments", protect, doctorOnly, getDoctorAppointments);
+
+// NEW → only this doctor’s reports
+router.get("/reports", protect, doctorOnly, getDoctorReports);
 
 router.put(
   "/appointments/:id/approve",

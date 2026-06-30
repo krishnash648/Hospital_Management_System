@@ -8,15 +8,19 @@ const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
 const name = params.get("name");
 
-console.log("URL TOKEN:", token);
-console.log("URL NAME:", name);
-
+// Save doctor session from URL
 if (token) {
   localStorage.setItem("doctorToken", token);
+  localStorage.setItem("role", "doctor");
 }
 
 if (name) {
   localStorage.setItem("doctorName", name);
+}
+
+// Clean URL after storing token
+if (token || name) {
+  window.history.replaceState({}, "", "/");
 }
 
 createRoot(document.getElementById("root")).render(

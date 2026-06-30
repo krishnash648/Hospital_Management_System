@@ -6,7 +6,6 @@ import Prescription from "../models/Prescription.js";
 export const getAllDoctors = async (req, res) => {
   try {
     const doctors = await User.find({ role: "doctor" }).select("-password");
-
     res.status(200).json(doctors);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -52,6 +51,21 @@ export const getDoctorAppointments = async (req, res) => {
       .sort({ createdAt: -1 });
 
     res.status(200).json(appointments);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getDoctorReports = async (req, res) => {
+  try {
+    const reports = await Report.find({
+      doctor: req.user._id,
+    })
+      .populate("patient", "name email")
+      .populate("doctor", "name specialization")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(reports);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -109,7 +123,10 @@ export const rejectAppointment = async (req, res) => {
 
 export const addDoctorNotes = async (req, res) => {
   try {
-    const report = await Report.findById(req.params.id);
+    const report = await Report.findOne({
+      _id: req.params.id,
+      doctor: req.user._id,
+    });
 
     if (!report) {
       return res.status(404).json({

@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Appointment from "./pages/Appointment";
@@ -26,7 +27,26 @@ const App = () => {
 
   return (
     <Router>
-      <Navbar />
+      <AppContent />
+    </Router>
+  );
+};
+
+const AppContent = () => {
+  const location = useLocation();
+
+  return (
+    <>
+      {/* hide navbar/footer on auth routes */}
+      {(() => {
+        const pathname = location.pathname;
+        const hideOn = ["/login", "/register", "/forgot-password"];
+
+        const hide =
+          hideOn.includes(pathname) || pathname.startsWith("/reset-password");
+
+        return hide ? null : <Navbar />;
+      })()}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -47,9 +67,17 @@ const App = () => {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
 
-      <Footer />
+      {(() => {
+        const pathname = location.pathname;
+        const hideOn = ["/login", "/register", "/forgot-password"];
+
+        const hide =
+          hideOn.includes(pathname) || pathname.startsWith("/reset-password");
+
+        return hide ? null : <Footer />;
+      })()}
       <ToastContainer position="top-center" />
-    </Router>
+    </>
   );
 };
 

@@ -74,6 +74,21 @@ h6 {
   padding: 0 20px;
 }
 
+/* Auth page centering */
+.auth-page,
+.login-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 1100px;
+}
+
 .login-form {
   margin: 100px auto 20px auto;
   max-width: 800px;

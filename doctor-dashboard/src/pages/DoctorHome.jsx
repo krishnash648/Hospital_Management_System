@@ -20,7 +20,7 @@ const DoctorHome = () => {
           "/doctors/my-appointments",
         );
 
-        const { data: reportData } = await API.get("/report-analysis/my");
+        const { data: reportData } = await API.get("/doctors/reports");
 
         setAppointments(appointmentData);
         setReports(reportData);

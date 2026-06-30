@@ -1,16 +1,11 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import { Context } from "../context/context";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import API from "../services/api";
 
 const Login = () => {
-  const { isAuthenticated, setIsAuthenticated } = useContext(Context);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const navigateTo = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,37 +16,41 @@ const Login = () => {
         password,
       });
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("userName", data.name);
-      localStorage.setItem("role", data.role);
+      localStorage.clear();
 
       if (data.role === "doctor") {
+        localStorage.setItem("doctorToken", data.token);
         localStorage.setItem("doctorName", data.name);
+        localStorage.setItem("role", "doctor");
+
+        toast.success("Doctor login successful");
+
+        window.location.replace(
+          `http://localhost:5175/?token=${data.token}&name=${encodeURIComponent(data.name)}`,
+        );
+
+        return;
       }
 
-      toast.success("Login successful", {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userName", data.name);
+      localStorage.setItem("role", "patient");
+
+      toast.success("Patient login successful", {
         theme: "colored",
       });
-
-      setIsAuthenticated(true);
 
       setEmail("");
       setPassword("");
 
-      if (data.role === "doctor") {
-        localStorage.setItem("doctorToken", data.token);
-        window.location.href = `http://localhost:5175/?token=${data.token}&name=${data.name}`;
-      } else {
-        navigateTo("/");
-      }
+      // Redirect patient to patient dashboard with token in URL
+      window.location.replace(
+        `http://localhost:5174/?token=${data.token}&name=${encodeURIComponent(data.name)}`,
+      );
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     }
   };
-
-  if (isAuthenticated) {
-    return <Navigate to="/" />;
-  }
 
   return (
     <section className="login-section">

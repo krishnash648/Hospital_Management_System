@@ -8,20 +8,14 @@ import {
   FaCog,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { toast } from "react-toastify";
 
 const DoctorSidebar = () => {
   const location = useLocation();
 
   const handleLogout = () => {
-    localStorage.removeItem("doctorToken");
-    localStorage.removeItem("doctorName");
-
-    toast.success("Logged out successfully");
-
-    setTimeout(() => {
-      window.location.href = "http://localhost:5173/login";
-    }, 1000);
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.replace("http://localhost:5173/login");
   };
 
   const menuItems = [

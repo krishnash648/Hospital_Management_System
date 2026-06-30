@@ -1,6 +1,6 @@
 import { FaChevronDown } from "react-icons/fa";
 import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { toast } from "react-toastify";
 import { Context } from "../context/context";
@@ -9,9 +9,7 @@ import API from "../services/api";
 const Navbar = () => {
   const [show, setShow] = useState(false);
 
-  const { isAuthenticated, setIsAuthenticated, setUser } = useContext(Context);
-
-  const navigateTo = useNavigate();
+  const { setIsAuthenticated, setUser } = useContext(Context);
 
   const handleLogout = async () => {
     try {
@@ -20,9 +18,7 @@ const Navbar = () => {
       console.log("Logout API error:", err);
     }
 
-    // Always clear client auth
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.clear();
 
     setIsAuthenticated(false);
     setUser(null);
@@ -32,19 +28,34 @@ const Navbar = () => {
     window.location.href = "http://localhost:5173/login";
   };
 
-  const goToLogin = () => {
-    navigateTo("/login");
-  };
-
   const goToDashboard = () => {
     const token = localStorage.getItem("token");
+    const doctorToken = localStorage.getItem("doctorToken");
+    const role = localStorage.getItem("role");
 
-    if (!token) {
-      toast.error("Please login first");
+    // Strict validation: patient dashboard ONLY if role=patient AND token exists
+    if (role === "patient" && token) {
+      window.location.href = "http://localhost:5174/";
       return;
     }
 
-    window.location.href = `http://localhost:5174?token=${token}`;
+    // Strict validation: doctor dashboard ONLY if role=doctor AND doctorToken exists
+    if (role === "doctor" && doctorToken) {
+      window.location.href = `http://localhost:5175/?token=${doctorToken}&name=${encodeURIComponent(localStorage.getItem("doctorName") || "")}`;
+      return;
+    }
+
+    // Otherwise, redirect to login
+    toast.error("Please login first");
+    window.location.href = "http://localhost:5173/login";
+  };
+
+  const getAuthState = () => {
+    const role = localStorage.getItem("role");
+    const token = localStorage.getItem("token");
+    const doctorToken = localStorage.getItem("doctorToken");
+
+    return (role === "patient" && token) || (role === "doctor" && doctorToken);
   };
 
   return (
@@ -97,7 +108,7 @@ const Navbar = () => {
         </div>
 
         <div className="nav-actions">
-          {isAuthenticated ? (
+          {getAuthState() ? (
             <>
               <button className="btn loginBtn" onClick={goToDashboard}>
                 Dashboard
@@ -109,9 +120,9 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <button className="btn loginBtn" onClick={goToLogin}>
-                Login
-              </button>
+              <Link to="/login" onClick={() => setShow(false)}>
+                <button className="btn loginBtn">Login</button>
+              </Link>
 
               <Link to="/register" onClick={() => setShow(false)}>
                 <button className="btn appointmentBtn">Register</button>

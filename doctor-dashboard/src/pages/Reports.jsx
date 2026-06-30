@@ -11,7 +11,7 @@ const Reports = () => {
 
   const fetchReports = async () => {
     try {
-      const { data } = await API.get("/reports/my");
+      const { data } = await API.get("/doctors/reports");
       setReports(data);
     } catch (error) {
       console.log(error);

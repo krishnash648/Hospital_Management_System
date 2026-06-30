@@ -1,10 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import DashboardHome from "./pages/DashboardHome";
 import MyAppointments from "./pages/MyAppointments";
@@ -20,26 +14,19 @@ import "react-toastify/dist/ReactToastify.css";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
 
-  if (!token) {
-    return <Navigate to="http://localhost:5173/login" replace />;
+  // Strict validation: ONLY allow patients with valid token
+  if (!token || role !== "patient") {
+    window.location.href = "http://localhost:5173/login";
+    return null;
   }
 
   return children;
 };
 
 function App() {
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-
-    if (token) {
-      localStorage.setItem("token", token);
-
-      // remove token from URL after saving
-      window.history.replaceState({}, document.title, "/");
-    }
-  }, []);
+  // Removed URL token hijacking to prevent session mixing
 
   return (
     <Router>

@@ -2,6 +2,7 @@ import fs from "fs";
 import { createRequire } from "module";
 import OpenAI from "openai";
 import Report from "../models/Report.js";
+import Appointment from "../models/Appointment.js";
 
 const require = createRequire(import.meta.url);
 const pdfParse = require("pdf-parse");
@@ -14,6 +15,24 @@ export const analyzeReport = async (req, res) => {
       });
     }
 
+    let doctorId = req.body.doctorId;
+
+    if (!doctorId) {
+      const latestAppointment = await Appointment.findOne({
+        patient: req.user._id,
+      })
+        .sort({ createdAt: -1 })
+        .select("doctor");
+
+      if (!latestAppointment?.doctor) {
+        return res.status(400).json({
+          message: "No appointment found. Please book an appointment first.",
+        });
+      }
+
+      doctorId = latestAppointment.doctor;
+    }
+
     const client = new OpenAI({
       apiKey: process.env.GROQ_API_KEY,
       baseURL: "https://api.groq.com/openai/v1",
@@ -23,12 +42,8 @@ export const analyzeReport = async (req, res) => {
 
     if (req.file.mimetype === "application/pdf") {
       const filePath = req.file.path;
-      console.log("Reading file from:", filePath);
 
       const dataBuffer = fs.readFileSync(filePath);
-
-      console.log(pdfParse);
-
       const result = await pdfParse(dataBuffer);
 
       extractedText = result.text;
@@ -66,6 +81,7 @@ Keep it simple for patients.
 
     const newReport = await Report.create({
       patient: req.user._id,
+      doctor: doctorId,
       title: req.file.originalname,
       reportType: req.file.mimetype,
       fileUrl: `/uploads/${req.file.filename}`,
@@ -91,7 +107,9 @@ export const getMyReports = async (req, res) => {
   try {
     const reports = await Report.find({
       patient: req.user._id,
-    }).sort({ createdAt: -1 });
+    })
+      .populate("doctor", "name specialization")
+      .sort({ createdAt: -1 });
 
     res.status(200).json(reports);
   } catch (error) {

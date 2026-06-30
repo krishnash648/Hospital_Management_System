@@ -7,7 +7,7 @@ const DoctorNavbar = () => {
     <nav className="dashboard-navbar">
       <button
         className="back-btn"
-        onClick={() => (window.location.href = "http://localhost:5173")}
+        onClick={() => (window.location.href = "http://localhost:5173/")}
       >
         ← Back to Website
       </button>

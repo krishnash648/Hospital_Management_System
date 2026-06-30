@@ -10,25 +10,24 @@ const MedicalReports = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
+  const [doctorId, setDoctorId] = useState("");
 
   useEffect(() => {
-    const fetchReports = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await API.get("/report-analysis/my");
+        const { data: reportData } = await API.get("/report-analysis/my");
+        setReports(reportData);
 
-        const completedReports = data.filter(
-          (appointment) =>
-            appointment.status === "approved" ||
-            appointment.status === "completed",
-        );
-
-        setReports(completedReports);
+        const { data: appointments } = await API.get("/appointments/my");
+        if (appointments.length > 0 && appointments[0].doctor?._id) {
+          setDoctorId(appointments[0].doctor._id);
+        }
       } catch (error) {
         console.log(error);
       }
     };
 
-    fetchReports();
+    fetchData();
   }, []);
 
   const handleFileUpload = (e) => {
@@ -40,6 +39,7 @@ const MedicalReports = () => {
 
     const formData = new FormData();
     formData.append("report", selectedFile);
+    formData.append("doctorId", doctorId);
 
     try {
       setLoading(true);
@@ -51,6 +51,10 @@ const MedicalReports = () => {
       });
 
       setAnalysis(data.analysis);
+
+      // refresh reports after upload
+      const updatedReports = await API.get("/report-analysis/my");
+      setReports(updatedReports.data);
     } catch (error) {
       console.log(error);
       setAnalysis("Failed to analyze report.");
@@ -70,7 +74,6 @@ const MedicalReports = () => {
           <h1>Medical Reports</h1>
           <p>Access all your health reports and lab documents.</p>
 
-          {/* Upload Section */}
           <div className="report-upload-box">
             <h2>Upload Report for AI Analysis</h2>
 
@@ -89,7 +92,6 @@ const MedicalReports = () => {
             </button>
           </div>
 
-          {/* AI Analysis Result */}
           {analysis && (
             <div className="report-analysis-box">
               <h2>AI Analysis Result</h2>
@@ -100,7 +102,6 @@ const MedicalReports = () => {
             </div>
           )}
 
-          {/* Existing Reports */}
           <div className="reports-grid">
             {reports.length === 0 ? (
               <p>No medical reports found.</p>
@@ -109,23 +110,33 @@ const MedicalReports = () => {
                 <div className="report-card" key={report._id}>
                   <div className="report-header">
                     <FaFileMedical />
-                    <h3>{report.department} Report</h3>
+                    <h3>{report.title}</h3>
                   </div>
 
                   <p>Doctor: {report.doctor?.name || "Doctor not assigned"}</p>
 
-                  <p>Date: {report.date?.split("T")[0]}</p>
+                  <p>Date: {report.createdAt?.split("T")[0]}</p>
 
-                  <span className="report-status ready">{report.status}</span>
+                  <span className="report-status ready">Analyzed</span>
 
                   <div className="report-actions">
-                    <button className="view-btn">
+                    <button
+                      className="view-btn"
+                      onClick={() =>
+                        window.open(
+                          `http://localhost:5000${report.fileUrl}`,
+                          "_blank",
+                        )
+                      }
+                    >
                       <FaEye /> View
                     </button>
 
-                    <button className="download-btn">
-                      <FaDownload /> Download
-                    </button>
+                    <a href={`http://localhost:5000${report.fileUrl}`} download>
+                      <button className="download-btn">
+                        <FaDownload /> Download
+                      </button>
+                    </a>
                   </div>
                 </div>
               ))

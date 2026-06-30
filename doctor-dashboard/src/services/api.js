@@ -5,10 +5,7 @@ const API = axios.create({
 });
 
 API.interceptors.request.use((req) => {
-  const token =
-    localStorage.getItem("doctorToken") || localStorage.getItem("token");
-
-  console.log("TOKEN USED:", token);
+  const token = localStorage.getItem("doctorToken");
 
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
@@ -20,7 +17,11 @@ API.interceptors.request.use((req) => {
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("API Error:", error.response?.data || error.message);
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      localStorage.clear();
+      window.location.href = "http://localhost:5173/login";
+    }
+
     return Promise.reject(error);
   },
 );
