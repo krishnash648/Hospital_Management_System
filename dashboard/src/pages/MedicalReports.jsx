@@ -19,8 +19,15 @@ const MedicalReports = () => {
         setReports(reportData);
 
         const { data: appointments } = await API.get("/appointments/my");
-        if (appointments.length > 0 && appointments[0].doctor?._id) {
-          setDoctorId(appointments[0].doctor._id);
+
+        const activeAppointment = appointments.find(
+          (appointment) =>
+            appointment.status === "approved" ||
+            appointment.status === "completed",
+        );
+
+        if (activeAppointment?.doctor?._id) {
+          setDoctorId(activeAppointment.doctor._id);
         }
       } catch (error) {
         console.log(error);
@@ -52,9 +59,10 @@ const MedicalReports = () => {
 
       setAnalysis(data.analysis);
 
-      // refresh reports after upload
       const updatedReports = await API.get("/report-analysis/my");
       setReports(updatedReports.data);
+
+      setSelectedFile(null);
     } catch (error) {
       console.log(error);
       setAnalysis("Failed to analyze report.");
@@ -74,6 +82,7 @@ const MedicalReports = () => {
           <h1>Medical Reports</h1>
           <p>Access all your health reports and lab documents.</p>
 
+          {/* Upload */}
           <div className="report-upload-box">
             <h2>Upload Report for AI Analysis</h2>
 
@@ -92,9 +101,10 @@ const MedicalReports = () => {
             </button>
           </div>
 
+          {/* Latest Analysis */}
           {analysis && (
             <div className="report-analysis-box">
-              <h2>AI Analysis Result</h2>
+              <h2>Latest AI Analysis</h2>
 
               <div className="analysis-content">
                 <ReactMarkdown>{analysis}</ReactMarkdown>
@@ -102,6 +112,7 @@ const MedicalReports = () => {
             </div>
           )}
 
+          {/* Reports */}
           <div className="reports-grid">
             {reports.length === 0 ? (
               <p>No medical reports found.</p>
@@ -113,11 +124,27 @@ const MedicalReports = () => {
                     <h3>{report.title}</h3>
                   </div>
 
-                  <p>Doctor: {report.doctor?.name || "Doctor not assigned"}</p>
+                  <p>
+                    <strong>Doctor:</strong>{" "}
+                    {report.doctor?.name || "Doctor not assigned"}
+                  </p>
 
-                  <p>Date: {report.createdAt?.split("T")[0]}</p>
+                  <p>
+                    <strong>Date:</strong> {report.createdAt?.split("T")[0]}
+                  </p>
 
-                  <span className="report-status ready">Analyzed</span>
+                  <p>
+                    <strong>Doctor Notes:</strong>{" "}
+                    {report.doctorNotes || "No notes yet"}
+                  </p>
+
+                  {/* Stored AI Analysis */}
+                  <div className="analysis-content">
+                    <strong>AI Analysis:</strong>
+                    <ReactMarkdown>
+                      {report.analyzedResult || "No analysis found"}
+                    </ReactMarkdown>
+                  </div>
 
                   <div className="report-actions">
                     <button

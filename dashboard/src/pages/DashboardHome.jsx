@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import DashboardNavbar from "../components/DashboardNavbar";
 import API from "../services/api";
@@ -21,8 +20,6 @@ const DashboardHome = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [reports, setReports] = useState([]);
 
-  const navigate = useNavigate();
-
   const fetchAppointments = useCallback(async () => {
     try {
       const { data } = await API.get("/appointments/my");
@@ -36,7 +33,7 @@ const DashboardHome = () => {
   const fetchHealth = useCallback(async () => {
     try {
       const { data } = await API.get("/health/my");
-      setHealthData(data?.length ? data[0] : null);
+      setHealthData(data || null);
     } catch (error) {
       console.log(error);
     }
@@ -166,7 +163,10 @@ const DashboardHome = () => {
                   <div className="appointment-actions">
                     <button
                       className="reschedule-btn"
-                      onClick={() => navigate("/appointment")}
+                      onClick={() =>
+                        (window.location.href =
+                          "http://localhost:5173/appointment")
+                      }
                     >
                       Reschedule
                     </button>

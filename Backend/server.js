@@ -5,6 +5,7 @@ import path from "path";
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
+
 import authRoutes from "./routes/authRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import doctorRoutes from "./routes/doctorRoutes.js";
@@ -15,6 +16,7 @@ import reportRoutes from "./routes/reportRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import reportAnalyzeRoutes from "./routes/reportAnalyzeRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 connectDB();
 
@@ -33,6 +35,8 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/report-analysis", reportAnalyzeRoutes);
+app.use("/api/reviews", reviewRoutes);
+
 app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {

@@ -6,15 +6,26 @@ import { toast } from "react-toastify";
 
 const PatientRecords = () => {
   const [patients, setPatients] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [prescriptions, setPrescriptions] = useState([]);
 
   useEffect(() => {
-    const fetchPatients = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await API.get("/doctors/my-appointments");
+        const { data: appointments } = await API.get(
+          "/doctors/my-appointments",
+        );
+        const { data: reportData } = await API.get("/doctors/reports");
+        const { data: prescriptionData } = await API.get(
+          "/doctors/prescriptions",
+        );
+
+        setReports(reportData);
+        setPrescriptions(prescriptionData);
 
         const uniquePatientsMap = {};
 
-        data.forEach((appointment) => {
+        appointments.forEach((appointment) => {
           const patient = appointment.patient;
 
           if (!patient?._id) return;
@@ -45,8 +56,16 @@ const PatientRecords = () => {
       }
     };
 
-    fetchPatients();
+    fetchData();
   }, []);
+
+  const getPatientReportsCount = (patientId) =>
+    reports.filter((report) => report.patient?._id === patientId).length;
+
+  const getPatientPrescriptionsCount = (patientId) =>
+    prescriptions.filter(
+      (prescription) => prescription.patient?._id === patientId,
+    ).length;
 
   return (
     <section className="dashboard-layout">
@@ -58,7 +77,7 @@ const PatientRecords = () => {
         <div className="dashboard-content">
           <div className="page-header">
             <h1>Patient Records</h1>
-            <p>View all patients assigned to you.</p>
+            <p>View complete patient medical records.</p>
           </div>
 
           <div className="appointments-table-wrapper">
@@ -69,6 +88,8 @@ const PatientRecords = () => {
                   <th>Email</th>
                   <th>Department</th>
                   <th>Total Visits</th>
+                  <th>Reports</th>
+                  <th>Prescriptions</th>
                   <th>Latest Visit</th>
                 </tr>
               </thead>
@@ -77,22 +98,24 @@ const PatientRecords = () => {
                 {patients.length > 0 ? (
                   patients.map((patient) => (
                     <tr key={patient._id}>
-                      <td className="patient-name">{patient.name}</td>
-                      <td className="patient-email">{patient.email}</td>
+                      <td>{patient.name}</td>
+                      <td>{patient.email}</td>
                       <td>{patient.department}</td>
+
                       <td>
-                        <span className="visit-badge">
-                          {patient.visits} Visits
-                        </span>
+                        <span className="visit-badge">{patient.visits}</span>
                       </td>
-                      <td className="latest-visit">
-                        {patient.latestVisit?.split("T")[0]}
-                      </td>
+
+                      <td>{getPatientReportsCount(patient._id)}</td>
+
+                      <td>{getPatientPrescriptionsCount(patient._id)}</td>
+
+                      <td>{patient.latestVisit?.split("T")[0]}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5">No patient records found.</td>
+                    <td colSpan="7">No patient records found.</td>
                   </tr>
                 )}
               </tbody>

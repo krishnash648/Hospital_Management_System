@@ -4,9 +4,10 @@ import DashboardHome from "./pages/DashboardHome";
 import MyAppointments from "./pages/MyAppointments";
 import AppointmentHistory from "./pages/AppointmentHistory";
 import MedicalReports from "./pages/MedicalReports";
+import Prescriptions from "./pages/Prescriptions";
 import Settings from "./pages/Settings";
 import AIHealthAssistant from "./pages/AIHealthAssistant";
-
+import HealthSummary from "./pages/HealthSummary";
 import "./App.css";
 
 import { ToastContainer } from "react-toastify";
@@ -26,8 +27,6 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
-  // Removed URL token hijacking to prevent session mixing
-
   return (
     <Router>
       <Routes>
@@ -68,6 +67,15 @@ function App() {
         />
 
         <Route
+          path="/prescriptions"
+          element={
+            <ProtectedRoute>
+              <Prescriptions />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/settings"
           element={
             <ProtectedRoute>
@@ -81,6 +89,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AIHealthAssistant />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/health-summary"
+          element={
+            <ProtectedRoute>
+              <HealthSummary />
             </ProtectedRoute>
           }
         />

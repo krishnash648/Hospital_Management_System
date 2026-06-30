@@ -3,7 +3,7 @@ import DoctorSidebar from "../components/DoctorSidebar";
 import DoctorNavbar from "../components/DoctorNavbar";
 import API from "../services/api";
 import { toast } from "react-toastify";
-import { FaFileMedical, FaEye, FaSave } from "react-icons/fa";
+import { FaFileMedical, FaEye, FaSave, FaDownload } from "react-icons/fa";
 
 const Reports = () => {
   const [reports, setReports] = useState([]);
@@ -12,7 +12,16 @@ const Reports = () => {
   const fetchReports = async () => {
     try {
       const { data } = await API.get("/doctors/reports");
+
       setReports(data);
+
+      // preload notes
+      const notesMap = {};
+      data.forEach((report) => {
+        notesMap[report._id] = report.doctorNotes || "";
+      });
+
+      setNotes(notesMap);
     } catch (error) {
       console.log(error);
       toast.error("Failed to load reports");
@@ -69,6 +78,10 @@ const Reports = () => {
                   </p>
 
                   <p>
+                    <strong>Type:</strong> {report.reportType}
+                  </p>
+
+                  <p>
                     <strong>Uploaded:</strong>{" "}
                     {new Date(report.createdAt).toLocaleDateString()}
                   </p>
@@ -78,6 +91,13 @@ const Reports = () => {
                     {report.doctorNotes || "No notes yet"}
                   </p>
 
+                  {/* AI Analysis */}
+                  <div className="analysis-box">
+                    <strong>AI Analysis:</strong>
+                    <p>{report.analyzedResult || "No analysis available"}</p>
+                  </div>
+
+                  {/* Actions */}
                   <div className="report-actions">
                     <button
                       className="view-btn"
@@ -90,8 +110,21 @@ const Reports = () => {
                     >
                       <FaEye /> View
                     </button>
+
+                    <button
+                      className="download-btn"
+                      onClick={() =>
+                        window.open(
+                          `http://localhost:5000${report.fileUrl}`,
+                          "_blank",
+                        )
+                      }
+                    >
+                      <FaDownload /> Download
+                    </button>
                   </div>
 
+                  {/* Doctor Notes */}
                   <textarea
                     placeholder="Write doctor notes..."
                     value={notes[report._id] || ""}

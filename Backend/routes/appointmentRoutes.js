@@ -13,8 +13,9 @@ const router = express.Router();
 
 router.post("/", protect, bookAppointment);
 router.get("/my", protect, getMyAppointments);
+router.put("/:id/cancel", protect, cancelAppointment);
+
 router.get("/doctor", protect, getDoctorAppointments);
-router.put("/:id", protect, updateAppointmentStatus);
-router.delete("/:id", protect, cancelAppointment);
+router.put("/:id/status", protect, updateAppointmentStatus);
 
 export default router;

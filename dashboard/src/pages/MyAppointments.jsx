@@ -9,10 +9,10 @@ const MyAppointments = () => {
 
   const fetchAppointments = useCallback(async () => {
     try {
-      const res = await API.get("/appointments/my");
+      const { data } = await API.get("/appointments/my");
 
-      if (Array.isArray(res.data)) {
-        setAppointments(res.data);
+      if (Array.isArray(data)) {
+        setAppointments(data);
       } else {
         setAppointments([]);
       }
@@ -25,14 +25,21 @@ const MyAppointments = () => {
   const cancelAppointment = async (id) => {
     try {
       await API.delete(`/appointments/${id}`);
+
       toast.success("Appointment cancelled");
 
       setAppointments((prev) =>
-        prev.filter((appointment) => appointment._id !== id),
+        prev.map((appointment) =>
+          appointment._id === id
+            ? { ...appointment, status: "cancelled" }
+            : appointment,
+        ),
       );
     } catch (error) {
       console.log(error);
-      toast.error("Failed to cancel appointment");
+      toast.error(
+        error.response?.data?.message || "Failed to cancel appointment",
+      );
     }
   };
 
@@ -44,6 +51,57 @@ const MyAppointments = () => {
     loadAppointments();
   }, [fetchAppointments]);
 
+  const today = new Date();
+
+  const upcomingAppointments = appointments.filter((appointment) => {
+    const appointmentDate = new Date(`${appointment.date}`);
+
+    return (
+      ["pending", "approved"].includes(appointment.status) &&
+      appointmentDate >= today
+    );
+  });
+
+  const renderTable = (data, showCancel = false) => (
+    <table className="appointments-table">
+      <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Department</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Notes</th>
+          {showCancel && <th>Actions</th>}
+        </tr>
+      </thead>
+
+      <tbody>
+        {data.map((appointment) => (
+          <tr key={appointment._id}>
+            <td>{appointment.doctor?.name || "N/A"}</td>
+            <td>{appointment.department}</td>
+            <td>{appointment.date?.split("T")[0]}</td>
+            <td>{appointment.time}</td>
+            <td>{appointment.status}</td>
+            <td>{appointment.notes || "No notes"}</td>
+
+            {showCancel && (
+              <td>
+                <button
+                  className="cancel-btn"
+                  onClick={() => cancelAppointment(appointment._id)}
+                >
+                  Cancel
+                </button>
+              </td>
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
   return (
     <section className="dashboard-layout">
       <Sidebar />
@@ -54,47 +112,17 @@ const MyAppointments = () => {
         <div className="dashboard-content">
           <div className="page-header">
             <h1>My Appointments</h1>
-            <p>Manage your upcoming and scheduled appointments.</p>
+            <p>Track your upcoming and past appointments.</p>
           </div>
 
+          {/* Upcoming */}
           <div className="appointments-table-wrapper">
-            {appointments.length === 0 ? (
-              <p>No appointments found.</p>
-            ) : (
-              <table className="appointments-table">
-                <thead>
-                  <tr>
-                    <th>Doctor</th>
-                    <th>Department</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                    <th>Notes</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
+            <h2>Upcoming Appointments</h2>
 
-                <tbody>
-                  {appointments.map((appointment) => (
-                    <tr key={appointment._id}>
-                      <td>{appointment.doctor?.name || "N/A"}</td>
-                      <td>{appointment.department}</td>
-                      <td>{appointment.date?.split("T")[0]}</td>
-                      <td>{appointment.time}</td>
-                      <td>{appointment.status}</td>
-                      <td>{appointment.notes || "No notes"}</td>
-                      <td>
-                        <button
-                          className="cancel-btn"
-                          onClick={() => cancelAppointment(appointment._id)}
-                        >
-                          Cancel
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {upcomingAppointments.length === 0 ? (
+              <p>No upcoming appointments.</p>
+            ) : (
+              renderTable(upcomingAppointments, true)
             )}
           </div>
         </div>

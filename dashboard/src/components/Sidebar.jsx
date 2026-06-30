@@ -4,9 +4,11 @@ import {
   FaCalendarAlt,
   FaHistory,
   FaFileMedical,
+  FaPrescriptionBottleAlt,
   FaCog,
   FaRobot,
   FaSignOutAlt,
+  FaHeartbeat,
 } from "react-icons/fa";
 import { useContext } from "react";
 import { Context } from "../context/context";
@@ -23,9 +25,10 @@ const Sidebar = () => {
       console.log("Logout API error:", err);
     }
 
-    // Always clear client auth
+    // clear patient session completely
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("role");
 
     setIsAuthenticated(false);
     setUser(null);
@@ -60,8 +63,20 @@ const Sidebar = () => {
           </li>
 
           <li>
+            <Link to="/health-summary">
+              <FaHeartbeat /> Health Summary
+            </Link>
+          </li>
+
+          <li>
             <Link to="/reports">
               <FaFileMedical /> Medical Reports
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/prescriptions">
+              <FaPrescriptionBottleAlt /> Prescriptions
             </Link>
           </li>
 

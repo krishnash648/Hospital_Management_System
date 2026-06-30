@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 const DoctorAppointments = () => {
   const [appointments, setAppointments] = useState([]);
 
+  // Refresh appointments after action
   const fetchAppointments = async () => {
     try {
       const { data } = await API.get("/doctors/my-appointments");
@@ -17,6 +18,7 @@ const DoctorAppointments = () => {
     }
   };
 
+  // Initial load (separate to avoid React warning)
   useEffect(() => {
     const loadAppointments = async () => {
       try {
@@ -34,6 +36,7 @@ const DoctorAppointments = () => {
   const approveAppointment = async (id) => {
     try {
       await API.put(`/doctors/appointments/${id}/approve`);
+
       toast.success("Appointment approved");
       fetchAppointments();
     } catch (error) {
@@ -45,11 +48,26 @@ const DoctorAppointments = () => {
   const rejectAppointment = async (id) => {
     try {
       await API.put(`/doctors/appointments/${id}/reject`);
-      toast.success("Appointment cancelled");
+
+      toast.success("Appointment rejected");
       fetchAppointments();
     } catch (error) {
       console.log(error);
-      toast.error("Failed to cancel appointment");
+      toast.error("Failed to reject appointment");
+    }
+  };
+
+  const completeAppointment = async (id) => {
+    try {
+      await API.put(`/doctors/appointments/${id}/complete`);
+
+      toast.success("Appointment marked completed");
+      fetchAppointments();
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data?.message || "Failed to complete appointment",
+      );
     }
   };
 
@@ -99,7 +117,8 @@ const DoctorAppointments = () => {
                       </td>
 
                       <td>
-                        {appointment.status === "pending" ? (
+                        {/* Pending */}
+                        {appointment.status === "pending" && (
                           <div className="appointment-btns">
                             <button
                               className="table-btn"
@@ -117,9 +136,22 @@ const DoctorAppointments = () => {
                               Reject
                             </button>
                           </div>
-                        ) : (
-                          "-"
                         )}
+
+                        {/* Approved */}
+                        {appointment.status === "approved" && (
+                          <button
+                            className="table-btn"
+                            onClick={() => completeAppointment(appointment._id)}
+                          >
+                            Mark Complete
+                          </button>
+                        )}
+
+                        {/* Finished */}
+                        {["completed", "rejected", "cancelled"].includes(
+                          appointment.status,
+                        ) && "-"}
                       </td>
                     </tr>
                   ))

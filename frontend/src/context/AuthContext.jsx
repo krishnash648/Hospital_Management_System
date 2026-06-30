@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Context } from "./context";
+import API from "../services/api";
 
 const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -8,11 +9,33 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+    const verifyUser = async () => {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
 
-    setIsAuthenticated(!!token && role === "patient");
-    setLoading(false);
+      if (!token || role !== "patient") {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data } = await API.get("/auth/me");
+
+        setUser(data);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.log("Token invalid:", error);
+
+        localStorage.clear();
+        setUser(null);
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyUser();
   }, []);
 
   if (loading) {

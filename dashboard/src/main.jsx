@@ -5,16 +5,21 @@ import "./App.css";
 import AuthProvider from "./context/AuthContext.jsx";
 
 const params = new URLSearchParams(window.location.search);
+
 const token = params.get("token");
 const name = params.get("name");
 
 if (token) {
+  localStorage.clear();
+
   localStorage.setItem("token", token);
+  localStorage.setItem("role", "patient");
+
   if (name) {
     localStorage.setItem("userName", name);
   }
-  localStorage.setItem("role", "patient");
-  window.history.replaceState({}, document.title, "/");
+
+  window.history.replaceState({}, "", "/");
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(

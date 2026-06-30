@@ -10,16 +10,16 @@ const name = params.get("name");
 
 // Save doctor session from URL
 if (token) {
+  localStorage.clear();
+
   localStorage.setItem("doctorToken", token);
   localStorage.setItem("role", "doctor");
-}
 
-if (name) {
-  localStorage.setItem("doctorName", name);
-}
+  if (name) {
+    localStorage.setItem("doctorName", name);
+  }
 
-// Clean URL after storing token
-if (token || name) {
+  // Clean URL after storing token
   window.history.replaceState({}, "", "/");
 }
 
