@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -34,6 +34,19 @@ const App = () => {
 
 const AppContent = () => {
   const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+
+    const token = params.get("token");
+    const name = params.get("name");
+
+    if (token) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("userName", name || "");
+      localStorage.setItem("role", "patient");
+    }
+  }, [location]);
 
   return (
     <>

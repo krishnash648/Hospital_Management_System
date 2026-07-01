@@ -13,6 +13,9 @@ const HealthSummary = () => {
     bloodGroup: "",
   });
 
+  const [timeline, setTimeline] = useState([]);
+  const [filter, setFilter] = useState("all");
+
   const fetchHealthData = useCallback(async () => {
     try {
       const { data } = await API.get("/health/my");
@@ -26,6 +29,9 @@ const HealthSummary = () => {
           bloodGroup: data.bloodGroup || "",
         });
       }
+
+      const { data: timelineData } = await API.get("/timeline/my");
+      setTimeline(timelineData);
     } catch (error) {
       console.log(error);
       toast.error("Failed to load health data");
@@ -59,6 +65,26 @@ const HealthSummary = () => {
     }
   };
 
+  const getIcon = (type) => {
+    switch (type) {
+      case "appointment":
+        return "📅";
+      case "payment":
+        return "💳";
+      case "prescription":
+        return "💊";
+      case "report":
+        return "📄";
+      default:
+        return "📌";
+    }
+  };
+
+  const filteredTimeline =
+    filter === "all"
+      ? timeline
+      : timeline.filter((item) => item.type === filter);
+
   return (
     <section className="dashboard-layout">
       <Sidebar />
@@ -67,6 +93,7 @@ const HealthSummary = () => {
         <DashboardNavbar />
 
         <div className="dashboard-content">
+          {/* Health Profile */}
           <div className="page-header">
             <h1>Health Summary</h1>
             <p>Manage and update your health profile.</p>
@@ -118,6 +145,45 @@ const HealthSummary = () => {
                 Save Health Profile
               </button>
             </form>
+          </div>
+
+          {/* Timeline */}
+          <div className="settings-card">
+            <h2>Medical History Timeline</h2>
+
+            <div className="timeline-filters">
+              <button onClick={() => setFilter("all")}>All</button>
+              <button onClick={() => setFilter("appointment")}>
+                Appointments
+              </button>
+              <button onClick={() => setFilter("payment")}>Payments</button>
+              <button onClick={() => setFilter("prescription")}>
+                Prescriptions
+              </button>
+              <button onClick={() => setFilter("report")}>Reports</button>
+            </div>
+
+            {filteredTimeline.length > 0 ? (
+              <div className="timeline-container">
+                {filteredTimeline.map((item, index) => (
+                  <div key={index} className="timeline-item">
+                    <div className="timeline-icon">{getIcon(item.type)}</div>
+
+                    <div className="timeline-content">
+                      <h4>{item.title}</h4>
+
+                      <span className={`timeline-status ${item.status}`}>
+                        {item.status}
+                      </span>
+
+                      <p>{item.date?.split("T")[0]}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No medical history found.</p>
+            )}
           </div>
         </div>
       </div>

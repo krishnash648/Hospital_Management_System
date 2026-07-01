@@ -16,8 +16,15 @@ const Login = () => {
         password,
       });
 
-      localStorage.clear();
+      // clear old auth sessions only
+      localStorage.removeItem("token");
+      localStorage.removeItem("doctorToken");
+      localStorage.removeItem("role");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("doctorName");
+      localStorage.removeItem("adminName");
 
+      // Doctor login
       if (data.role === "doctor") {
         localStorage.setItem("doctorToken", data.token);
         localStorage.setItem("doctorName", data.name);
@@ -26,12 +33,32 @@ const Login = () => {
         toast.success("Doctor login successful");
 
         window.location.replace(
-          `http://localhost:5175/?token=${data.token}&name=${encodeURIComponent(data.name)}`,
+          `http://localhost:5175/?token=${data.token}&name=${encodeURIComponent(
+            data.name,
+          )}`,
         );
 
         return;
       }
 
+      // Admin login
+      if (data.role === "admin") {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("adminName", data.name);
+        localStorage.setItem("role", "admin");
+
+        toast.success("Admin login successful");
+
+        window.location.replace(
+          `http://localhost:5176/?token=${data.token}&name=${encodeURIComponent(
+            data.name,
+          )}`,
+        );
+
+        return;
+      }
+
+      // Patient login
       localStorage.setItem("token", data.token);
       localStorage.setItem("userName", data.name);
       localStorage.setItem("role", "patient");
@@ -43,9 +70,10 @@ const Login = () => {
       setEmail("");
       setPassword("");
 
-      // Redirect patient to patient dashboard with token in URL
       window.location.replace(
-        `http://localhost:5174/?token=${data.token}&name=${encodeURIComponent(data.name)}`,
+        `http://localhost:5174/?token=${data.token}&name=${encodeURIComponent(
+          data.name,
+        )}`,
       );
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
@@ -61,7 +89,7 @@ const Login = () => {
           </div>
 
           <div className="login-content">
-            <span className="login-badge">Secure Patient Portal</span>
+            <span className="login-badge">Secure Healthcare Portal</span>
 
             <h2>Welcome Back</h2>
 

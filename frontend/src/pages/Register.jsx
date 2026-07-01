@@ -27,7 +27,13 @@ const Register = () => {
         specialization: role === "doctor" ? specialization : "",
       });
 
-      localStorage.clear();
+      // clear old auth sessions only
+      localStorage.removeItem("token");
+      localStorage.removeItem("doctorToken");
+      localStorage.removeItem("role");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("doctorName");
+      localStorage.removeItem("adminName");
 
       if (data.role === "doctor") {
         localStorage.setItem("doctorToken", data.token);

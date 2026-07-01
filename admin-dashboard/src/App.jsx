@@ -6,10 +6,10 @@ import {
 } from "react-router-dom";
 import { useEffect } from "react";
 
-import DoctorHome from "./pages/DoctorHome";
-import DoctorAppointments from "./pages/DoctorAppointments";
-import PatientRecords from "./pages/PatientRecords";
-import Prescriptions from "./pages/Prescriptions";
+import AdminHome from "./pages/AdminHome";
+import Doctors from "./pages/Doctors";
+import Patients from "./pages/Patients";
+import Appointments from "./pages/Appointments";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 
@@ -17,19 +17,11 @@ import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const DoctorProtectedRoute = ({ children }) => {
-  const doctorToken = localStorage.getItem("doctorToken");
-  const patientToken = localStorage.getItem("token");
+const AdminProtectedRoute = ({ children }) => {
+  const adminToken = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
-  // patient trying doctor dashboard
-  if (role === "patient" && patientToken) {
-    window.location.replace("http://localhost:5174/");
-    return null;
-  }
-
-  // no doctor auth
-  if (!doctorToken || role !== "doctor") {
+  if (!adminToken || role !== "admin") {
     window.location.replace("http://localhost:5173/login");
     return null;
   }
@@ -47,9 +39,9 @@ const AppRoutes = () => {
     const name = params.get("name");
 
     if (token) {
-      localStorage.setItem("doctorToken", token);
-      localStorage.setItem("doctorName", name || "");
-      localStorage.setItem("role", "doctor");
+      localStorage.setItem("token", token);
+      localStorage.setItem("adminName", name || "");
+      localStorage.setItem("role", "admin");
     }
   }, [location]);
 
@@ -59,54 +51,54 @@ const AppRoutes = () => {
         <Route
           path="/"
           element={
-            <DoctorProtectedRoute>
-              <DoctorHome />
-            </DoctorProtectedRoute>
+            <AdminProtectedRoute>
+              <AdminHome />
+            </AdminProtectedRoute>
           }
         />
 
         <Route
-          path="/appointments"
+          path="/doctors"
           element={
-            <DoctorProtectedRoute>
-              <DoctorAppointments />
-            </DoctorProtectedRoute>
+            <AdminProtectedRoute>
+              <Doctors />
+            </AdminProtectedRoute>
           }
         />
 
         <Route
           path="/patients"
           element={
-            <DoctorProtectedRoute>
-              <PatientRecords />
-            </DoctorProtectedRoute>
+            <AdminProtectedRoute>
+              <Patients />
+            </AdminProtectedRoute>
           }
         />
 
         <Route
-          path="/prescriptions"
+          path="/appointments"
           element={
-            <DoctorProtectedRoute>
-              <Prescriptions />
-            </DoctorProtectedRoute>
+            <AdminProtectedRoute>
+              <Appointments />
+            </AdminProtectedRoute>
           }
         />
 
         <Route
           path="/reports"
           element={
-            <DoctorProtectedRoute>
+            <AdminProtectedRoute>
               <Reports />
-            </DoctorProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
 
         <Route
           path="/settings"
           element={
-            <DoctorProtectedRoute>
+            <AdminProtectedRoute>
               <Settings />
-            </DoctorProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
       </Routes>

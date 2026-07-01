@@ -1,95 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import API from "../services/api";
 import { FaStar, FaUserDoctor, FaHospital, FaAward } from "react-icons/fa6";
 import { FaHeart } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const Doctors = () => {
-  const doctors = [
-    {
-      id: 1,
-      name: "Dr. Max Wilson",
-      specialization: "Senior Cardiologist",
-      department: "Cardiology",
-      experience: "20 Years",
-      rating: "5.0",
-      image: "/doctors/doctor1.png",
-    },
-    {
-      id: 2,
-      name: "Dr. Mamta Sharma",
-      specialization: "Neurology Specialist",
-      department: "Neurology",
-      experience: "10 Years",
-      rating: "4.8",
-      image: "/doctors/doctor2.png",
-    },
-    {
-      id: 3,
-      name: "Dr. Emily Davis",
-      specialization: "Pediatric Consultant",
-      department: "Pediatrics",
-      experience: "8 Years",
-      rating: "4.9",
-      image: "/doctors/doctor3.png",
-    },
-    {
-      id: 4,
-      name: "Dr. James Anderson",
-      specialization: "Orthopedic Surgeon",
-      department: "Orthopedics",
-      experience: "14 Years",
-      rating: "4.8",
-      image: "/doctors/doctor4.png",
-    },
-    {
-      id: 5,
-      name: "Dr. Olivia Taylor",
-      specialization: "Dermatology Expert",
-      department: "Dermatology",
-      experience: "9 Years",
-      rating: "4.9",
-      image: "/doctors/doctor5.png",
-    },
-    {
-      id: 6,
-      name: "Dr. Sheila Mehta",
-      specialization: "Radiology Consultant",
-      department: "Radiology",
-      experience: "11 Years",
-      rating: "4.7",
-      image: "/doctors/doctor6.png",
-    },
-    {
-      id: 7,
-      name: "Dr. Ashish Kapoor",
-      specialization: "ENT Specialist",
-      department: "ENT",
-      experience: "7 Years",
-      rating: "4.8",
-      image: "/doctors/doctor7.png",
-    },
-    {
-      id: 8,
-      name: "Dr. Pradyuman Sharma",
-      specialization: "Gynecology Surgeon",
-      department: "Gynecology",
-      experience: "13 Years",
-      rating: "4.9",
-      image: "/doctors/doctor8.png",
-    },
-    {
-      id: 9,
-      name: "Dr. Kabir Shah",
-      specialization: "Anesthesiologists Expert",
-      department: "Anesthesiologists",
-      experience: "10 Years",
-      rating: "4.8",
-      image: "/doctors/doctor9.png",
-    },
-  ];
-
+  const [doctors, setDoctors] = useState([]);
   const [search, setSearch] = useState("");
   const [department, setDepartment] = useState("All");
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const { data } = await API.get("/doctors");
+        setDoctors(data);
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to load doctors");
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const filteredDoctors = doctors.filter((doctor) => {
     const matchesSearch = doctor.name
@@ -97,7 +30,7 @@ const Doctors = () => {
       .includes(search.toLowerCase());
 
     const matchesDepartment =
-      department === "All" || doctor.department === department;
+      department === "All" || doctor.specialization === department;
 
     return matchesSearch && matchesDepartment;
   });
@@ -134,35 +67,41 @@ const Doctors = () => {
           onChange={(e) => setDepartment(e.target.value)}
         >
           <option>All</option>
-          <option>Cardiology</option>
-          <option>Neurology</option>
-          <option>Pediatrics</option>
-          <option>Orthopedics</option>
-          <option>Dermatology</option>
-          <option>Radiology</option>
-          <option>ENT</option>
-          <option>Gynecology</option>
-          <option>Anesthesiologists</option>
+
+          {[...new Set(doctors.map((doc) => doc.specialization))].map(
+            (spec, index) => (
+              <option key={index}>{spec}</option>
+            ),
+          )}
         </select>
       </section>
 
       <section className="container doctors-grid">
         {filteredDoctors.map((doctor) => (
-          <div className="doctor-card" key={doctor.id}>
-            <img src={doctor.image} alt={doctor.name} />
+          <div className="doctor-card" key={doctor._id}>
+            <img
+              src={
+                doctor.profileImage
+                  ? `http://localhost:5000${doctor.profileImage}`
+                  : "/doctors/default-doctor.png"
+              }
+              alt={doctor.name}
+            />
 
             <div className="doctor-card-content">
-              <span>{doctor.department}</span>
+              <span>{doctor.specialization}</span>
+
               <h3>{doctor.name}</h3>
-              <p>{doctor.specialization}</p>
+
+              <p>{doctor.bio || "Experienced healthcare specialist"}</p>
 
               <div className="doctor-meta">
                 <div>
                   <FaStar />
-                  {doctor.rating}
+                  4.8
                 </div>
 
-                <div>{doctor.experience}</div>
+                <div>{doctor.experience || 0} Years</div>
               </div>
 
               <Link to="/appointment" className="doctor-btn">

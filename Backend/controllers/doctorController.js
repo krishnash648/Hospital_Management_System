@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import Appointment from "../models/Appointment.js";
 import Report from "../models/Report.js";
 import Prescription from "../models/Prescription.js";
+import sendEmail from "../utils/sendEmail.js";
 
 // Get all doctors
 export const getAllDoctors = async (req, res) => {
@@ -132,7 +133,6 @@ export const rejectAppointment = async (req, res) => {
     }
 
     appointment.status = "rejected";
-
     await appointment.save();
 
     res.status(200).json({
@@ -167,7 +167,6 @@ export const completeAppointment = async (req, res) => {
     }
 
     appointment.status = "completed";
-
     await appointment.save();
 
     res.status(200).json({
@@ -196,7 +195,6 @@ export const addDoctorNotes = async (req, res) => {
     }
 
     report.doctorNotes = req.body.doctorNotes;
-
     await report.save();
 
     res.status(200).json({
@@ -223,6 +221,23 @@ export const createPrescription = async (req, res) => {
       duration,
       notes,
     });
+
+    const patientData = await User.findById(patient);
+
+    if (patientData) {
+      await sendEmail({
+        to: patientData.email,
+        subject: "New Prescription Added",
+        html: `
+          <h2>Prescription Uploaded</h2>
+          <p>Dr. ${req.user.name} has added a new prescription for you.</p>
+          <p><strong>Medicine:</strong> ${medicineName}</p>
+          <p><strong>Dosage:</strong> ${dosage}</p>
+          <p><strong>Duration:</strong> ${duration}</p>
+          <p><strong>Notes:</strong> ${notes || "No notes"}</p>
+        `,
+      });
+    }
 
     res.status(201).json({
       message: "Prescription created",
@@ -275,6 +290,22 @@ export const updatePrescription = async (req, res) => {
     prescription.notes = notes || prescription.notes;
 
     await prescription.save();
+
+    const patientData = await User.findById(prescription.patient);
+
+    if (patientData) {
+      await sendEmail({
+        to: patientData.email,
+        subject: "Prescription Updated",
+        html: `
+          <h2>Your Prescription Has Been Updated</h2>
+          <p>Dr. ${req.user.name} updated your prescription.</p>
+          <p><strong>Medicine:</strong> ${prescription.medicineName}</p>
+          <p><strong>Dosage:</strong> ${prescription.dosage}</p>
+          <p><strong>Duration:</strong> ${prescription.duration}</p>
+        `,
+      });
+    }
 
     res.status(200).json({
       message: "Prescription updated",

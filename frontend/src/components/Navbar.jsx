@@ -25,7 +25,7 @@ const Navbar = () => {
 
     toast.success("Logged out successfully");
 
-    window.location.href = "http://localhost:5173/login";
+    window.location.replace("http://localhost:5173/login");
   };
 
   const goToDashboard = () => {
@@ -33,21 +33,22 @@ const Navbar = () => {
     const doctorToken = localStorage.getItem("doctorToken");
     const role = localStorage.getItem("role");
 
-    // Strict validation: patient dashboard ONLY if role=patient AND token exists
     if (role === "patient" && token) {
-      window.location.href = "http://localhost:5174/";
+      window.location.replace("http://localhost:5174/");
       return;
     }
 
-    // Strict validation: doctor dashboard ONLY if role=doctor AND doctorToken exists
     if (role === "doctor" && doctorToken) {
-      window.location.href = `http://localhost:5175/?token=${doctorToken}&name=${encodeURIComponent(localStorage.getItem("doctorName") || "")}`;
+      window.location.replace(
+        `http://localhost:5175/?token=${doctorToken}&name=${encodeURIComponent(
+          localStorage.getItem("doctorName") || "",
+        )}`,
+      );
       return;
     }
 
-    // Otherwise, redirect to login
     toast.error("Please login first");
-    window.location.href = "http://localhost:5173/login";
+    window.location.replace("http://localhost:5173/login");
   };
 
   const getAuthState = () => {

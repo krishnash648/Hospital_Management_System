@@ -10,10 +10,11 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const verifyUser = async () => {
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token") || localStorage.getItem("doctorToken");
       const role = localStorage.getItem("role");
 
-      if (!token || role !== "patient") {
+      if (!token || !role) {
         setIsAuthenticated(false);
         setLoading(false);
         return;
@@ -27,7 +28,14 @@ const AuthProvider = ({ children }) => {
       } catch (error) {
         console.log("Token invalid:", error);
 
-        localStorage.clear();
+        // Only clear auth-related items, not all localStorage
+        localStorage.removeItem("token");
+        localStorage.removeItem("doctorToken");
+        localStorage.removeItem("role");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("doctorName");
+        localStorage.removeItem("adminName");
+
         setUser(null);
         setIsAuthenticated(false);
       } finally {

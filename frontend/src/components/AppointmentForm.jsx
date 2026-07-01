@@ -24,6 +24,7 @@ const AppointmentForm = () => {
     "Physical Therapy",
     "Dermatology",
     "ENT",
+    "Gynecology",
   ];
 
   // Auto-select department from AI recommendation
@@ -38,6 +39,7 @@ const AppointmentForm = () => {
       Gastroenterologist: "Oncology",
       Orthopedic: "Orthopedics",
       "General Physician": "Pediatrics",
+      Gynecologist: "Gynecology",
     };
 
     if (specialistMap[specialist]) {
@@ -60,10 +62,27 @@ const AppointmentForm = () => {
     fetchDoctors();
   }, []);
 
-  const filteredDoctors = doctors.filter(
-    (doctor) => doctor.specialization === department,
-  );
+  const normalizeSpecialization = (value) => {
+    if (!value) return "";
 
+    const normalized = value.toLowerCase().trim();
+
+    if (
+      normalized === "gynaecologist" ||
+      normalized === "gynecologist" ||
+      normalized === "gynecology"
+    ) {
+      return "gynecology";
+    }
+
+    return normalized;
+  };
+
+  const filteredDoctors = doctors.filter(
+    (doctor) =>
+      normalizeSpecialization(doctor.specialization) ===
+      normalizeSpecialization(department),
+  );
   const handleAppointment = async (e) => {
     e.preventDefault();
 

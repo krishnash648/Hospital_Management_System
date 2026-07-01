@@ -38,6 +38,33 @@ const appointmentSchema = new mongoose.Schema(
     notes: {
       type: String,
     },
+
+    // Payment fields
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
+      default: "pending",
+    },
+
+    paymentAmount: {
+      type: Number,
+      default: 0,
+    },
+
+    paymentMethod: {
+      type: String,
+      default: "Not Selected",
+    },
+
+    transactionId: {
+      type: String,
+      default: "",
+    },
+
+    invoiceNumber: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true },
 );
