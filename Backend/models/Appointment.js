@@ -39,6 +39,11 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
     },
 
+    meetingLink: {
+      type: String,
+      default: "",
+    },
+
     // Payment fields
     paymentStatus: {
       type: String,

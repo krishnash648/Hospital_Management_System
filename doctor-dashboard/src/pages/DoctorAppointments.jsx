@@ -6,8 +6,9 @@ import { toast } from "react-toastify";
 
 const DoctorAppointments = () => {
   const [appointments, setAppointments] = useState([]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [meetingLink, setMeetingLink] = useState("");
 
-  // Refresh appointments after action
   const fetchAppointments = async () => {
     try {
       const { data } = await API.get("/doctors/my-appointments");
@@ -18,7 +19,6 @@ const DoctorAppointments = () => {
     }
   };
 
-  // Initial load (separate to avoid React warning)
   useEffect(() => {
     const loadAppointments = async () => {
       try {
@@ -33,11 +33,21 @@ const DoctorAppointments = () => {
     loadAppointments();
   }, []);
 
-  const approveAppointment = async (id) => {
+  const approveAppointment = async () => {
+    if (!meetingLink) {
+      return toast.error("Meeting link is required");
+    }
+
     try {
-      await API.put(`/doctors/appointments/${id}/approve`);
+      await API.put(`/doctors/appointments/${selectedAppointment}/approve`, {
+        meetingLink,
+      });
 
       toast.success("Appointment approved");
+
+      setSelectedAppointment(null);
+      setMeetingLink("");
+
       fetchAppointments();
     } catch (error) {
       console.log(error);
@@ -117,13 +127,12 @@ const DoctorAppointments = () => {
                       </td>
 
                       <td>
-                        {/* Pending */}
                         {appointment.status === "pending" && (
                           <div className="appointment-btns">
                             <button
                               className="table-btn"
                               onClick={() =>
-                                approveAppointment(appointment._id)
+                                setSelectedAppointment(appointment._id)
                               }
                             >
                               Approve
@@ -138,17 +147,29 @@ const DoctorAppointments = () => {
                           </div>
                         )}
 
-                        {/* Approved */}
                         {appointment.status === "approved" && (
-                          <button
-                            className="table-btn"
-                            onClick={() => completeAppointment(appointment._id)}
-                          >
-                            Mark Complete
-                          </button>
+                          <div className="appointment-btns">
+                            <button
+                              className="table-btn"
+                              onClick={() =>
+                                appointment.meetingLink &&
+                                window.open(appointment.meetingLink, "_blank")
+                              }
+                            >
+                              Start Meet
+                            </button>
+
+                            <button
+                              className="feedback-btn"
+                              onClick={() =>
+                                completeAppointment(appointment._id)
+                              }
+                            >
+                              Mark Complete
+                            </button>
+                          </div>
                         )}
 
-                        {/* Finished */}
                         {["completed", "rejected", "cancelled"].includes(
                           appointment.status,
                         ) && "-"}
@@ -165,6 +186,38 @@ const DoctorAppointments = () => {
           </div>
         </div>
       </div>
+
+      {selectedAppointment && (
+        <div className="meeting-modal">
+          <div className="meeting-card">
+            <h2 className="meeting-title">Add Google Meet Link</h2>
+
+            <input
+              type="text"
+              className="meeting-input"
+              placeholder="Paste Google Meet link here..."
+              value={meetingLink}
+              onChange={(e) => setMeetingLink(e.target.value)}
+            />
+
+            <div className="meeting-actions">
+              <button className="meeting-save-btn" onClick={approveAppointment}>
+                Save & Approve
+              </button>
+
+              <button
+                className="meeting-close-btn"
+                onClick={() => {
+                  setSelectedAppointment(null);
+                  setMeetingLink("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

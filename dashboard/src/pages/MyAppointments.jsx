@@ -124,6 +124,17 @@ const MyAppointments = () => {
             {showActions && (
               <td>
                 <div className="action-buttons">
+                  {appointment.status === "approved" &&
+                    appointment.meetingLink && (
+                      <button
+                        className="view-btn"
+                        onClick={() =>
+                          window.open(appointment.meetingLink, "_blank")
+                        }
+                      >
+                        Join Meet
+                      </button>
+                    )}
                   {appointment.paymentStatus === "pending" && (
                     <button
                       className="pay-btn"

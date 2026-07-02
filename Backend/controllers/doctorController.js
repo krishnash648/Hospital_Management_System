@@ -93,6 +93,8 @@ export const getDoctorReports = async (req, res) => {
 // Approve appointment
 export const approveAppointment = async (req, res) => {
   try {
+    const { meetingLink } = req.body;
+
     const appointment = await Appointment.findOne({
       _id: req.params.id,
       doctor: req.user._id,
@@ -105,7 +107,20 @@ export const approveAppointment = async (req, res) => {
     }
 
     appointment.status = "approved";
+    appointment.meetingLink = meetingLink;
+
     await appointment.save();
+
+    const patient = await User.findById(appointment.patient);
+
+    if (patient) {
+      patient.notifications.push({
+        message: `Appointment approved. Join link available now.`,
+        read: false,
+      });
+
+      await patient.save();
+    }
 
     res.status(200).json({
       message: "Appointment approved",
