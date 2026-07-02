@@ -32,16 +32,28 @@ const DashboardNavbar = () => {
   };
 
   useEffect(() => {
-    const loadNotifications = async () => {
+    let mounted = true;
+
+    const fetchNotifications = async () => {
       try {
         const { data } = await API.get("/auth/notifications");
-        setNotifications(data);
+
+        if (mounted) {
+          setNotifications(data);
+        }
       } catch (error) {
         console.log(error);
       }
     };
 
-    loadNotifications();
+    fetchNotifications();
+
+    const interval = setInterval(fetchNotifications, 5000);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   const unreadCount = notifications.filter((item) => !item.read).length;

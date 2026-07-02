@@ -222,28 +222,41 @@ export const createPrescription = async (req, res) => {
       notes,
     });
 
-    const patientData = await User.findById(patient);
+    const updatedUser = await User.findByIdAndUpdate(
+      patient,
+      {
+        $push: {
+          notifications: {
+            message: `New prescription added by Dr. ${req.user.name}`,
+            read: false,
+          },
+        },
+      },
+      { new: true },
+    );
 
-    if (patientData) {
-      await sendEmail({
-        to: patientData.email,
+    if (updatedUser) {
+      sendEmail({
+        to: updatedUser.email,
         subject: "New Prescription Added",
         html: `
-          <h2>Prescription Uploaded</h2>
-          <p>Dr. ${req.user.name} has added a new prescription for you.</p>
-          <p><strong>Medicine:</strong> ${medicineName}</p>
-          <p><strong>Dosage:</strong> ${dosage}</p>
-          <p><strong>Duration:</strong> ${duration}</p>
-          <p><strong>Notes:</strong> ${notes || "No notes"}</p>
-        `,
-      });
+    <h2>Prescription Uploaded</h2>
+    <p>Dr. ${req.user.name} has added a new prescription for you.</p>
+    <p><strong>Medicine:</strong> ${medicineName}</p>
+    <p><strong>Dosage:</strong> ${dosage}</p>
+    <p><strong>Duration:</strong> ${duration}</p>
+    <p><strong>Notes:</strong> ${notes || "No notes"}</p>
+  `,
+      }).catch((err) => console.log("Prescription email failed:", err.message));
     }
 
     res.status(201).json({
-      message: "Prescription created",
+      message: "Prescription created successfully",
       prescription,
     });
   } catch (error) {
+    console.log("CREATE PRESCRIPTION ERROR:", error);
+
     res.status(500).json({
       message: error.message,
     });
@@ -255,9 +268,7 @@ export const getDoctorPrescriptions = async (req, res) => {
   try {
     const prescriptions = await Prescription.find({
       doctor: req.user._id,
-    })
-      .populate("patient", "name email")
-      .sort({ createdAt: -1 });
+    }).populate("patient", "name email");
 
     res.status(200).json(prescriptions);
   } catch (error) {
@@ -290,22 +301,6 @@ export const updatePrescription = async (req, res) => {
     prescription.notes = notes || prescription.notes;
 
     await prescription.save();
-
-    const patientData = await User.findById(prescription.patient);
-
-    if (patientData) {
-      await sendEmail({
-        to: patientData.email,
-        subject: "Prescription Updated",
-        html: `
-          <h2>Your Prescription Has Been Updated</h2>
-          <p>Dr. ${req.user.name} updated your prescription.</p>
-          <p><strong>Medicine:</strong> ${prescription.medicineName}</p>
-          <p><strong>Dosage:</strong> ${prescription.dosage}</p>
-          <p><strong>Duration:</strong> ${prescription.duration}</p>
-        `,
-      });
-    }
 
     res.status(200).json({
       message: "Prescription updated",
