@@ -215,6 +215,51 @@ export const getAdminStats = async (req, res) => {
     const totalReports = await Report.countDocuments();
     const totalPrescriptions = await Prescription.countDocuments();
 
+    const pendingAppointments = await Appointment.countDocuments({
+      status: "pending",
+    });
+
+    const completedAppointments = await Appointment.countDocuments({
+      status: "completed",
+    });
+
+    const cancelledAppointments = await Appointment.countDocuments({
+      status: "cancelled",
+    });
+
+    const revenueData = await Appointment.aggregate([
+      {
+        $match: {
+          paymentStatus: "paid",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$paymentAmount" },
+        },
+      },
+    ]);
+
+    const doctorLoad = await Appointment.aggregate([
+      {
+        $group: {
+          _id: "$doctor",
+          totalAppointments: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          totalAppointments: -1,
+        },
+      },
+    ]);
+
+    const populatedDoctorLoad = await User.populate(doctorLoad, {
+      path: "_id",
+      select: "name specialization",
+    });
+
     const latestDoctor = await User.findOne({ role: "doctor" })
       .sort({ createdAt: -1 })
       .select("name specialization createdAt");
@@ -234,6 +279,11 @@ export const getAdminStats = async (req, res) => {
       totalAppointments,
       totalReports,
       totalPrescriptions,
+      pendingAppointments,
+      completedAppointments,
+      cancelledAppointments,
+      totalRevenue: revenueData[0]?.totalRevenue || 0,
+      doctorLoad: populatedDoctorLoad,
       latestDoctor,
       latestPatient,
       latestAppointment,

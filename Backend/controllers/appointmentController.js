@@ -1,4 +1,5 @@
 import Appointment from "../models/Appointment.js";
+import Report from "../models/Report.js";
 import User from "../models/User.js";
 import Stripe from "stripe";
 import sendEmail from "../utils/sendEmail.js";
@@ -15,13 +16,44 @@ export const bookAppointment = async (req, res) => {
       });
     }
 
+    const selectedDate = new Date(date);
+
+    const selectedAvailability = doctorData.availability.find(
+      (item) => item.date === date,
+    );
+
+    if (!selectedAvailability) {
+      return res.status(400).json({
+        message: "Doctor not available on selected date",
+      });
+    }
+
+    if (!selectedAvailability.slots.includes(time)) {
+      return res.status(400).json({
+        message: "Selected slot not available",
+      });
+    }
+
+    const existingAppointment = await Appointment.findOne({
+      doctor,
+      date,
+      time,
+      status: { $in: ["pending", "approved"] },
+    });
+
+    if (existingAppointment) {
+      return res.status(400).json({
+        message: "This slot is already booked",
+      });
+    }
+
     const invoiceNumber = `INV-${Date.now()}`;
 
     const appointment = await Appointment.create({
       patient: req.user._id,
       doctor,
       department,
-      date,
+      date: selectedDate,
       time,
       notes,
       paymentAmount: doctorData.fees || 0,
@@ -29,32 +61,42 @@ export const bookAppointment = async (req, res) => {
       invoiceNumber,
     });
 
-    // Patient email
-    await sendEmail({
+    const latestReport = await Report.findOne({
+      patient: req.user._id,
+    }).sort({ createdAt: -1 });
+
+    if (latestReport) {
+      latestReport.doctor = doctorData._id;
+      await latestReport.save();
+
+      console.log("Report linked:", latestReport._id);
+    }
+
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: {
+        notifications: {
+          message: `Appointment booked with Dr. ${doctorData.name} on ${date} at ${time}`,
+        },
+      },
+    });
+
+    sendEmail({
       to: req.user.email,
       subject: "Appointment Booked Successfully",
       html: `
         <h2>Appointment Confirmation</h2>
         <p>Your appointment with Dr. ${doctorData.name} has been booked.</p>
-        <p><strong>Department:</strong> ${department}</p>
-        <p><strong>Date:</strong> ${date}</p>
-        <p><strong>Time:</strong> ${time}</p>
-        <p><strong>Status:</strong> Pending Payment</p>
       `,
-    });
+    }).catch((err) => console.log("Patient email failed:", err.message));
 
-    // Doctor email
-    await sendEmail({
+    sendEmail({
       to: doctorData.email,
       subject: "New Appointment Booked",
       html: `
         <h2>New Appointment Notification</h2>
-        <p>You have a new appointment booked.</p>
-        <p><strong>Patient:</strong> ${req.user.name}</p>
-        <p><strong>Date:</strong> ${date}</p>
-        <p><strong>Time:</strong> ${time}</p>
+        <p>New appointment booked by ${req.user.name}</p>
       `,
-    });
+    }).catch((err) => console.log("Doctor email failed:", err.message));
 
     res.status(201).json({
       message: "Appointment booked successfully",
@@ -103,14 +145,6 @@ export const updateAppointmentStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
-    const allowedStatuses = ["approved", "rejected", "completed"];
-
-    if (!allowedStatuses.includes(status)) {
-      return res.status(400).json({
-        message: "Invalid status update",
-      });
-    }
-
     const appointment = await Appointment.findOne({
       _id: req.params.id,
       doctor: req.user._id,
@@ -125,17 +159,38 @@ export const updateAppointmentStatus = async (req, res) => {
     appointment.status = status;
     await appointment.save();
 
+    if (status === "completed") {
+      await User.updateOne(
+        {
+          _id: req.user._id,
+          "availability.date": appointment.date.toISOString().split("T")[0],
+        },
+        {
+          $pull: {
+            "availability.$.slots": appointment.time,
+          },
+        },
+      );
+    }
+
     const patient = await User.findById(appointment.patient);
 
     if (patient) {
-      await sendEmail({
+      patient.notifications.push({
+        message: `Appointment with Dr. ${req.user.name} is ${status}`,
+        read: false,
+      });
+
+      await patient.save();
+
+      sendEmail({
         to: patient.email,
         subject: `Appointment ${status}`,
         html: `
           <h2>Appointment Status Updated</h2>
-          <p>Your appointment has been <strong>${status}</strong>.</p>
+          <p>Your appointment has been ${status}</p>
         `,
-      });
+      }).catch((err) => console.log("Status email failed:", err.message));
     }
 
     res.status(200).json({
@@ -151,15 +206,7 @@ export const updateAppointmentStatus = async (req, res) => {
 
 export const markAppointmentPaid = async (req, res) => {
   try {
-    const stripeKey = process.env.STRIPE_SECRET_KEY;
-
-    if (!stripeKey) {
-      return res.status(500).json({
-        message: "Stripe Secret Key missing in .env",
-      });
-    }
-
-    const stripe = new Stripe(stripeKey);
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     const appointment = await Appointment.findOne({
       _id: req.params.id,
@@ -174,29 +221,21 @@ export const markAppointmentPaid = async (req, res) => {
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-
       line_items: [
         {
           price_data: {
             currency: "inr",
             product_data: {
               name: `Appointment with Dr. ${appointment.doctor.name}`,
-              description: appointment.department,
             },
             unit_amount: appointment.paymentAmount * 100,
           },
           quantity: 1,
         },
       ],
-
       mode: "payment",
-
       success_url: `${process.env.CLIENT_URL}/payment-success/${appointment._id}`,
       cancel_url: `${process.env.CLIENT_URL}/appointments`,
-
-      metadata: {
-        appointmentId: appointment._id.toString(),
-      },
     });
 
     res.status(200).json({
@@ -211,10 +250,7 @@ export const markAppointmentPaid = async (req, res) => {
 
 export const paymentSuccess = async (req, res) => {
   try {
-    const appointment = await Appointment.findOne({
-      _id: req.params.id,
-      patient: req.user._id,
-    });
+    const appointment = await Appointment.findById(req.params.id);
 
     if (!appointment) {
       return res.status(404).json({
@@ -228,16 +264,12 @@ export const paymentSuccess = async (req, res) => {
 
     await appointment.save();
 
-    await sendEmail({
-      to: req.user.email,
-      subject: "Payment Successful",
-      html: `
-        <h2>Payment Confirmation</h2>
-        <p>Your payment has been received successfully.</p>
-        <p><strong>Invoice Number:</strong> ${appointment.invoiceNumber}</p>
-        <p><strong>Amount:</strong> ₹${appointment.paymentAmount}</p>
-        <p><strong>Transaction ID:</strong> ${appointment.transactionId}</p>
-      `,
+    await User.findByIdAndUpdate(appointment.patient, {
+      $push: {
+        notifications: {
+          message: `Payment successful for appointment #${appointment.invoiceNumber}`,
+        },
+      },
     });
 
     res.status(200).json({
@@ -294,21 +326,128 @@ export const cancelAppointment = async (req, res) => {
       });
     }
 
-    if (
-      appointment.status === "completed" ||
-      appointment.status === "cancelled"
-    ) {
+    if (["completed", "cancelled"].includes(appointment.status)) {
       return res.status(400).json({
-        message: "Cannot cancel this appointment",
+        message: "Appointment cannot be cancelled",
       });
     }
 
     appointment.status = "cancelled";
-
     await appointment.save();
+
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: {
+        notifications: {
+          message: `Appointment cancelled for ${appointment.date.toISOString().split("T")[0]} at ${appointment.time}`,
+        },
+      },
+    });
 
     res.status(200).json({
       message: "Appointment cancelled successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getDoctorBookedSlots = async (req, res) => {
+  try {
+    const { doctorId, date } = req.params;
+
+    const appointments = await Appointment.find({
+      doctor: doctorId,
+      date: new Date(date),
+      status: { $in: ["pending", "approved"] },
+    });
+
+    const bookedSlots = appointments.map((item) => item.time);
+
+    res.status(200).json(bookedSlots);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const rescheduleAppointment = async (req, res) => {
+  try {
+    const { date, time } = req.body;
+
+    const appointment = await Appointment.findOne({
+      _id: req.params.id,
+      patient: req.user._id,
+    }).populate("doctor");
+
+    if (!appointment) {
+      return res.status(404).json({
+        message: "Appointment not found",
+      });
+    }
+
+    if (appointment.status === "cancelled") {
+      return res.status(400).json({
+        message: "Cannot reschedule cancelled appointment",
+      });
+    }
+
+    const selectedAvailability = appointment.doctor.availability.find(
+      (item) => item.date === date,
+    );
+
+    if (!selectedAvailability) {
+      return res.status(400).json({
+        message: "Doctor not available on selected date",
+      });
+    }
+
+    if (!selectedAvailability.slots.includes(time)) {
+      return res.status(400).json({
+        message: "Selected slot not available",
+      });
+    }
+
+    const existingAppointment = await Appointment.findOne({
+      doctor: appointment.doctor._id,
+      date,
+      time,
+      status: { $in: ["pending", "approved"] },
+      _id: { $ne: appointment._id },
+    });
+
+    if (existingAppointment) {
+      return res.status(400).json({
+        message: "Slot already booked",
+      });
+    }
+
+    appointment.date = date;
+    appointment.time = time;
+    appointment.status = "pending";
+
+    await appointment.save();
+
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: {
+        notifications: {
+          message: `Appointment rescheduled to ${date} at ${time}`,
+        },
+      },
+    });
+
+    await User.findByIdAndUpdate(appointment.doctor._id, {
+      $push: {
+        notifications: {
+          message: `Appointment rescheduled by patient to ${date} at ${time}`,
+        },
+      },
+    });
+
+    res.status(200).json({
+      message: "Appointment rescheduled successfully",
       appointment,
     });
   } catch (error) {

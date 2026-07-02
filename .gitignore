@@ -29,6 +29,8 @@ backend/.env
 dashboard/.env
 frontend/.env
 
-Backend/uploads
 backend/uploads
-Backend/uploads/
+backend/uploads
+backend/uploads/
+
+backend/eng.traineddata

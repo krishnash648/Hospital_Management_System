@@ -52,14 +52,35 @@ const userSchema = new mongoose.Schema(
       type: Number,
     },
 
-    availability: {
-      type: [String],
-      default: [],
-    },
+    availability: [
+      {
+        date: {
+          type: String,
+        },
+        slots: {
+          type: [String],
+          default: [],
+        },
+      },
+    ],
 
     bio: {
       type: String,
     },
+
+    notifications: [
+      {
+        message: String,
+        read: {
+          type: Boolean,
+          default: false,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
 
     notificationPreferences: {
       appointmentAlerts: {

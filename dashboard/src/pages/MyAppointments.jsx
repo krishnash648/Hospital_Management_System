@@ -8,17 +8,15 @@ const MyAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [invoice, setInvoice] = useState(null);
 
+  const [rescheduleId, setRescheduleId] = useState(null);
+  const [newDate, setNewDate] = useState("");
+  const [newTime, setNewTime] = useState("");
+
   const fetchAppointments = async () => {
     try {
       const { data } = await API.get("/appointments/my");
-
-      if (Array.isArray(data)) {
-        setAppointments(data);
-      } else {
-        setAppointments([]);
-      }
-    } catch (error) {
-      console.log(error);
+      setAppointments(Array.isArray(data) ? data : []);
+    } catch {
       toast.error("Failed to fetch appointments");
     }
   };
@@ -26,11 +24,9 @@ const MyAppointments = () => {
   const cancelAppointment = async (id) => {
     try {
       await API.put(`/appointments/${id}/cancel`);
-
       toast.success("Appointment cancelled");
       fetchAppointments();
     } catch (error) {
-      console.log(error);
       toast.error(
         error.response?.data?.message || "Failed to cancel appointment",
       );
@@ -41,8 +37,7 @@ const MyAppointments = () => {
     try {
       const { data } = await API.put(`/appointments/${id}/pay`);
       window.open(data.url, "_self");
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error("Payment failed");
     }
   };
@@ -51,9 +46,27 @@ const MyAppointments = () => {
     try {
       const { data } = await API.get(`/appointments/${id}/invoice`);
       setInvoice(data);
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error("Failed to fetch invoice");
+    }
+  };
+
+  const rescheduleAppointment = async () => {
+    try {
+      await API.put(`/appointments/${rescheduleId}/reschedule`, {
+        date: newDate,
+        time: newTime,
+      });
+
+      toast.success("Appointment rescheduled");
+
+      setRescheduleId(null);
+      setNewDate("");
+      setNewTime("");
+
+      fetchAppointments();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Reschedule failed");
     }
   };
 
@@ -130,6 +143,13 @@ const MyAppointments = () => {
                   )}
 
                   <button
+                    className="table-btn"
+                    onClick={() => setRescheduleId(appointment._id)}
+                  >
+                    Reschedule
+                  </button>
+
+                  <button
                     className="cancel-btn"
                     onClick={() => cancelAppointment(appointment._id)}
                   >
@@ -169,6 +189,50 @@ const MyAppointments = () => {
         </div>
       </div>
 
+      {/* Reschedule Modal */}
+      {rescheduleId && (
+        <div className="reschedule-modal">
+          <div className="reschedule-card">
+            <h2>Reschedule Appointment</h2>
+
+            <div className="reschedule-form">
+              <input
+                type="date"
+                value={newDate}
+                onChange={(e) => setNewDate(e.target.value)}
+              />
+
+              <input
+                type="time"
+                value={newTime}
+                onChange={(e) => setNewTime(e.target.value)}
+              />
+
+              <div className="reschedule-actions">
+                <button
+                  className="reschedule-save-btn"
+                  onClick={rescheduleAppointment}
+                >
+                  Save
+                </button>
+
+                <button
+                  className="reschedule-close-btn"
+                  onClick={() => {
+                    setRescheduleId(null);
+                    setNewDate("");
+                    setNewTime("");
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Invoice Modal */}
       {invoice && (
         <div className="invoice-modal">
           <div className="invoice-card">

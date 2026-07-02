@@ -11,7 +11,7 @@ const Reports = () => {
 
   const fetchReports = async () => {
     try {
-      const { data } = await API.get("/doctors/reports");
+      const { data } = await API.get("/report-analysis/doctor");
 
       setReports(data);
 
@@ -38,7 +38,7 @@ const Reports = () => {
 
   const saveDoctorNotes = async (reportId) => {
     try {
-      await API.put(`/doctors/reports/${reportId}/notes`, {
+      await API.put(`/report-analysis/${reportId}/notes`, {
         doctorNotes: notes[reportId],
       });
 

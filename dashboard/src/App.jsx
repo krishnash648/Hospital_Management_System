@@ -15,7 +15,6 @@ import Settings from "./pages/Settings";
 import AIHealthAssistant from "./pages/AIHealthAssistant";
 import HealthSummary from "./pages/HealthSummary";
 import PaymentSuccess from "./pages/PaymentSuccess";
-
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

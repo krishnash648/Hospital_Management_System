@@ -1458,3 +1458,130 @@ body.compact-mode .toggle-group label {
     padding: 20px;
   }
 }
+
+/* Doctor Availability Section */
+.availability-days {
+  margin-top: 20px;
+}
+
+.availability-days h3,
+.availability-slots h3 {
+  font-size: 18px;
+  margin-bottom: 14px;
+  color: #111827;
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.day-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.day-checkbox:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.day-checkbox input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Slot Section */
+.availability-slots {
+  margin-top: 25px;
+}
+
+.slot-input-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.slot-input-row input {
+  flex: 1;
+}
+
+.add-slot-btn {
+  padding: 12px 18px;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.add-slot-btn:hover {
+  background: #15803d;
+}
+
+/* Slot Cards */
+.slot-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.slot-item {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 10px 14px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.remove-slot-btn {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border: none;
+  border-radius: 50%;
+  background: #dc2626 !important;
+  color: white !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0 !important;
+  line-height: 1;
+  transition: 0.3s ease;
+}
+
+.remove-slot-btn:hover {
+  background: #b91c1c !important;
+  transform: scale(1.05);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .days-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .slot-input-row {
+    flex-direction: column;
+  }
+
+  .add-slot-btn {
+    width: 100%;
+  }
+}

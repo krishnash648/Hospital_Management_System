@@ -10,6 +10,7 @@ import {
   FaPrescriptionBottleAlt,
   FaArrowUp,
   FaClipboardList,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 
@@ -33,6 +34,11 @@ const AdminHome = () => {
     totalAppointments: 0,
     totalReports: 0,
     totalPrescriptions: 0,
+    pendingAppointments: 0,
+    completedAppointments: 0,
+    cancelledAppointments: 0,
+    totalRevenue: 0,
+    doctorLoad: [],
     latestDoctor: null,
     latestPatient: null,
     latestAppointment: null,
@@ -65,12 +71,12 @@ const AdminHome = () => {
   ];
 
   const pieData = [
-    { name: "Doctors", value: stats.totalDoctors },
-    { name: "Patients", value: stats.totalPatients },
-    { name: "Appointments", value: stats.totalAppointments },
+    { name: "Pending", value: stats.pendingAppointments },
+    { name: "Completed", value: stats.completedAppointments },
+    { name: "Cancelled", value: stats.cancelledAppointments },
   ];
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
+  const COLORS = ["#FFBB28", "#00C49F", "#FF4D4F"];
 
   if (loading) {
     return (
@@ -99,8 +105,8 @@ const AdminHome = () => {
             <div>
               <h1>Hospital Control Center 🏥</h1>
               <p>
-                Monitor hospital operations, staff, patients, reports and
-                appointments from one place.
+                Monitor hospital operations, revenue, doctor workload, reports
+                and appointments.
               </p>
             </div>
 
@@ -141,6 +147,12 @@ const AdminHome = () => {
               <h2>{stats.totalPrescriptions}</h2>
               <p>Total Prescriptions</p>
             </div>
+
+            <div className="stat-card">
+              <FaMoneyBillWave className="stat-icon" />
+              <h2>₹{stats.totalRevenue}</h2>
+              <p>Total Revenue</p>
+            </div>
           </div>
 
           {/* Charts */}
@@ -159,7 +171,7 @@ const AdminHome = () => {
             </div>
 
             <div className="dashboard-box">
-              <h2>Hospital Distribution</h2>
+              <h2>Appointment Distribution</h2>
 
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -218,27 +230,35 @@ const AdminHome = () => {
             </div>
 
             <div className="dashboard-box">
-              <h2>Quick Summary</h2>
+              <h2>Appointment Status</h2>
 
               <div className="summary-item">
-                <span>Doctors Available</span>
-                <strong>{stats.totalDoctors}</strong>
+                <span>Pending</span>
+                <strong>{stats.pendingAppointments}</strong>
               </div>
 
               <div className="summary-item">
-                <span>Patients Registered</span>
-                <strong>{stats.totalPatients}</strong>
+                <span>Completed</span>
+                <strong>{stats.completedAppointments}</strong>
               </div>
 
               <div className="summary-item">
-                <span>Reports Uploaded</span>
-                <strong>{stats.totalReports}</strong>
+                <span>Cancelled</span>
+                <strong>{stats.cancelledAppointments}</strong>
               </div>
+            </div>
 
-              <div className="summary-item">
-                <span>Prescriptions Issued</span>
-                <strong>{stats.totalPrescriptions}</strong>
-              </div>
+            <div className="dashboard-box">
+              <h2>Doctor Workload</h2>
+
+              {stats.doctorLoad.map((doctor) => (
+                <div key={doctor._id._id} className="summary-item">
+                  <span>
+                    Dr. {doctor._id.name} ({doctor._id.specialization})
+                  </span>
+                  <strong>{doctor.totalAppointments}</strong>
+                </div>
+              ))}
             </div>
           </div>
         </div>

@@ -307,9 +307,11 @@ Click below to book an appointment.`
                         selectedSpecialist && (
                           <button
                             className="book-now-btn"
-                            onClick={() =>
-                              (window.location.href = `http://localhost:5173/appointment?specialist=${selectedSpecialist}`)
-                            }
+                            onClick={() => {
+                              window.location.href = `/appointment?specialist=${encodeURIComponent(
+                                selectedSpecialist,
+                              )}`;
+                            }}
                           >
                             Book Appointment
                           </button>
@@ -340,6 +342,7 @@ Click below to book an appointment.`
                 >
                   <FaMicrophone />
                 </button>
+
                 <input
                   type="text"
                   placeholder="Describe your symptoms..."

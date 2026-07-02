@@ -19,6 +19,7 @@ const DashboardHome = () => {
   const [healthData, setHealthData] = useState(null);
   const [prescriptions, setPrescriptions] = useState([]);
   const [reports, setReports] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   const fetchAppointments = useCallback(async () => {
     try {
@@ -43,7 +44,6 @@ const DashboardHome = () => {
     try {
       const { data } = await API.get("/prescriptions/my");
       setPrescriptions(data);
-      console.log("asdlsd", data);
     } catch (error) {
       console.log(error);
     }
@@ -58,6 +58,15 @@ const DashboardHome = () => {
     }
   }, []);
 
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const { data } = await API.get("/auth/notifications");
+      setNotifications(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   useEffect(() => {
     const loadDashboardData = async () => {
       await Promise.allSettled([
@@ -65,30 +74,37 @@ const DashboardHome = () => {
         fetchHealth(),
         fetchPrescriptions(),
         fetchReports(),
+        fetchNotifications(),
       ]);
     };
 
     loadDashboardData();
-  }, [fetchAppointments, fetchHealth, fetchPrescriptions, fetchReports]);
+  }, [
+    fetchAppointments,
+    fetchHealth,
+    fetchPrescriptions,
+    fetchReports,
+    fetchNotifications,
+  ]);
 
   const cancelAppointment = async (id) => {
     try {
-      await API.delete(`/appointments/${id}`);
+      await API.put(`/appointments/${id}/cancel`);
       toast.success("Appointment cancelled");
+
       fetchAppointments();
+      fetchNotifications();
     } catch (error) {
       console.log(error);
       toast.error("Failed to cancel appointment");
     }
   };
 
-  // Better upcoming appointment logic
   const upcomingAppointment = appointments.find(
     (appointment) =>
       appointment.status === "pending" || appointment.status === "approved",
   );
 
-  // Stats
   const totalAppointments = appointments.length;
 
   const upcomingCount = appointments.filter(
@@ -100,7 +116,6 @@ const DashboardHome = () => {
     (appointment) => appointment.status === "completed",
   ).length;
 
-  // Doctor notes only
   const doctorNotes = reports.filter((report) => report.doctorNotes);
 
   return (
@@ -190,14 +205,15 @@ const DashboardHome = () => {
                 <FaBell /> Notifications
               </h2>
 
-              {appointments.length > 0 ? (
-                appointments.map((appointment) => (
+              {notifications.length > 0 ? (
+                notifications.slice(0, 5).map((notification, index) => (
                   <div
-                    key={appointment._id}
-                    className="notification-item success"
+                    key={index}
+                    className={`notification-item ${
+                      notification.read ? "info" : "success"
+                    }`}
                   >
-                    Appointment with Dr. {appointment.doctor?.name || "Unknown"}{" "}
-                    is {appointment.status}
+                    {notification.message}
                   </div>
                 ))
               ) : (
@@ -292,6 +308,7 @@ const DashboardHome = () => {
                 <p>No prescriptions available.</p>
               )}
             </div>
+
             {/* Recent Reports */}
             <div className="dashboard-box">
               <h2>

@@ -92,7 +92,7 @@ export const getMe = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-  const { name, email, phone } = req.body;
+  const { name, email, phone, fees, availability } = req.body;
 
   try {
     const user = await User.findById(req.user._id);
@@ -106,17 +106,21 @@ export const updateProfile = async (req, res) => {
     user.name = name || user.name;
     user.email = email || user.email;
     user.phone = phone || user.phone;
+    user.fees = fees || user.fees;
 
+    user.availability = availability || [];
     const updatedUser = await user.save();
 
-    res.status(200).json(updatedUser);
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,
     });
   }
 };
-
 export const changePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
@@ -262,6 +266,39 @@ export const resetPassword = async (req, res) => {
   } catch (error) {
     console.log("FORGOT PASSWORD ERROR:", error);
 
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getNotifications = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    res.status(200).json((user.notifications || []).reverse());
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const markNotificationsRead = async (req, res) => {
+  try {
+    await User.updateOne(
+      { _id: req.user._id },
+      {
+        $set: {
+          "notifications.$[].read": true,
+        },
+      },
+    );
+
+    res.status(200).json({
+      message: "Notifications marked as read",
+    });
+  } catch (error) {
     res.status(500).json({
       message: error.message,
     });

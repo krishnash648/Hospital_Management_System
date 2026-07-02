@@ -13,6 +13,9 @@ const AppointmentForm = () => {
   const [selectedDoctorName, setSelectedDoctorName] = useState("");
   const [notes, setNotes] = useState("");
   const [doctors, setDoctors] = useState([]);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [bookedSlots, setBookedSlots] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
 
   const departmentsArray = [
     "Pediatrics",
@@ -25,9 +28,9 @@ const AppointmentForm = () => {
     "Dermatology",
     "ENT",
     "Gynecology",
+    "Endocrinology",
   ];
 
-  // Auto-select department from AI recommendation
   useEffect(() => {
     if (!specialist) return;
 
@@ -40,6 +43,16 @@ const AppointmentForm = () => {
       Orthopedic: "Orthopedics",
       "General Physician": "Pediatrics",
       Gynecologist: "Gynecology",
+      Gynecology: "Gynecology",
+      Pediatrics: "Pediatrics",
+      Orthopedics: "Orthopedics",
+      Cardiology: "Cardiology",
+      Neurology: "Neurology",
+      Oncology: "Oncology",
+      Radiology: "Radiology",
+      "Physical Therapy": "Physical Therapy",
+      ENT: "ENT",
+      Endocrinologist: "Endocrinology",
     };
 
     if (specialistMap[specialist]) {
@@ -47,14 +60,12 @@ const AppointmentForm = () => {
     }
   }, [specialist]);
 
-  // Fetch doctors
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
         const { data } = await API.get("/doctors");
         setDoctors(data);
-      } catch (error) {
-        console.log(error);
+      } catch {
         toast.error("Failed to load doctors");
       }
     };
@@ -67,15 +78,26 @@ const AppointmentForm = () => {
 
     const normalized = value.toLowerCase().trim();
 
-    if (
-      normalized === "gynaecologist" ||
-      normalized === "gynecologist" ||
-      normalized === "gynecology"
-    ) {
-      return "gynecology";
-    }
+    const map = {
+      gynecologist: "gynecology",
+      gynaecologist: "gynecology",
+      gynecology: "gynecology",
+      gynaecology: "gynecology",
+      orthopedic: "orthopedics",
+      orthopaedic: "orthopedics",
+      cardiologist: "cardiology",
+      neurologist: "neurology",
+      dermatologist: "dermatology",
+      ent: "ent",
+      oncologist: "oncology",
+      radiologist: "radiology",
+      pediatrician: "pediatrics",
+      physiotherapist: "physical therapy",
+      endocrinologist: "endocrinology",
+      endocrinology: "endocrinology",
+    };
 
-    return normalized;
+    return map[normalized] || normalized;
   };
 
   const filteredDoctors = doctors.filter(
@@ -83,16 +105,61 @@ const AppointmentForm = () => {
       normalizeSpecialization(doctor.specialization) ===
       normalizeSpecialization(department),
   );
+
+  const fetchBookedSlots = async (doctorId, date) => {
+    try {
+      const { data } = await API.get(
+        `/appointments/doctor/${doctorId}/${date}`,
+      );
+      setBookedSlots(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDoctorChange = (doctorName) => {
+    setSelectedDoctorName(doctorName);
+
+    const doctor = doctors.find((doc) => doc.name === doctorName);
+
+    setSelectedDoctor(doctor);
+    setAppointmentDate("");
+    setAppointmentTime("");
+    setBookedSlots([]);
+    setAvailableSlots([]);
+  };
+
+  const handleDateChange = async (date) => {
+    setAppointmentDate(date);
+    setAppointmentTime("");
+
+    const selectedAvailability = selectedDoctor?.availability?.find(
+      (item) => item.date === date,
+    );
+
+    if (!selectedAvailability) {
+      toast.error("Doctor not available on selected date");
+      setAvailableSlots([]);
+      return;
+    }
+
+    setAvailableSlots(selectedAvailability.slots);
+
+    if (selectedDoctor) {
+      await fetchBookedSlots(selectedDoctor._id, date);
+    }
+  };
+
   const handleAppointment = async (e) => {
     e.preventDefault();
 
     try {
-      const selectedDoctor = doctors.find(
-        (doc) => doc.name === selectedDoctorName,
-      );
-
       if (!selectedDoctor) {
         return toast.error("Please select a doctor");
+      }
+
+      if (!appointmentTime) {
+        return toast.error("Please select a slot");
       }
 
       const { data } = await API.post("/appointments", {
@@ -103,15 +170,16 @@ const AppointmentForm = () => {
         notes,
       });
 
-      toast.success(data.message || "Appointment booked successfully");
+      toast.success(data.message);
 
       setAppointmentDate("");
       setAppointmentTime("");
-      setDepartment("Cardiology");
+      setSelectedDoctor(null);
       setSelectedDoctorName("");
       setNotes("");
+      setBookedSlots([]);
+      setAvailableSlots([]);
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message || "Booking failed");
     }
   };
@@ -125,38 +193,18 @@ const AppointmentForm = () => {
 
         <div className="appointment-form-area">
           <p className="section-tag">BOOK APPOINTMENT</p>
-
           <h2>Schedule Your Visit</h2>
 
-          {specialist && (
-            <p>
-              Recommended Specialist: <strong>{specialist}</strong>
-            </p>
-          )}
-
           <form onSubmit={handleAppointment}>
-            <div className="form-row">
-              <input
-                type="date"
-                value={appointmentDate}
-                onChange={(e) => setAppointmentDate(e.target.value)}
-                required
-              />
-
-              <input
-                type="time"
-                value={appointmentTime}
-                onChange={(e) => setAppointmentTime(e.target.value)}
-                required
-              />
-            </div>
-
             <div className="form-row">
               <select
                 value={department}
                 onChange={(e) => {
                   setDepartment(e.target.value);
+                  setSelectedDoctor(null);
                   setSelectedDoctorName("");
+                  setAppointmentDate("");
+                  setAppointmentTime("");
                 }}
               >
                 {departmentsArray.map((depart, index) => (
@@ -165,10 +213,12 @@ const AppointmentForm = () => {
                   </option>
                 ))}
               </select>
+            </div>
 
+            <div className="form-row">
               <select
                 value={selectedDoctorName}
-                onChange={(e) => setSelectedDoctorName(e.target.value)}
+                onChange={(e) => handleDoctorChange(e.target.value)}
                 required
               >
                 <option value="">Select Doctor</option>
@@ -178,12 +228,40 @@ const AppointmentForm = () => {
                     Dr. {doctor.name}
                   </option>
                 ))}
-
-                {filteredDoctors.length === 0 && (
-                  <option disabled>No doctors available</option>
-                )}
               </select>
             </div>
+
+            <div className="form-row">
+              <input
+                type="date"
+                value={appointmentDate}
+                min={new Date().toISOString().split("T")[0]}
+                onChange={(e) => handleDateChange(e.target.value)}
+                required
+              />
+            </div>
+
+            {availableSlots.length > 0 && (
+              <div className="form-row">
+                <select
+                  value={appointmentTime}
+                  onChange={(e) => setAppointmentTime(e.target.value)}
+                  required
+                >
+                  <option value="">Select Slot</option>
+
+                  {availableSlots.map((slot, index) => {
+                    const isBooked = bookedSlots.includes(slot);
+
+                    return (
+                      <option key={index} value={slot} disabled={isBooked}>
+                        {slot} {isBooked ? "❌ Booked" : ""}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            )}
 
             <textarea
               rows="5"

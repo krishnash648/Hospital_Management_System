@@ -10,31 +10,18 @@ const MedicalReports = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
-  const [doctorId, setDoctorId] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchReports = async () => {
       try {
-        const { data: reportData } = await API.get("/report-analysis/my");
-        setReports(reportData);
-
-        const { data: appointments } = await API.get("/appointments/my");
-
-        const activeAppointment = appointments.find(
-          (appointment) =>
-            appointment.status === "approved" ||
-            appointment.status === "completed",
-        );
-
-        if (activeAppointment?.doctor?._id) {
-          setDoctorId(activeAppointment.doctor._id);
-        }
+        const { data } = await API.get("/report-analysis/my");
+        setReports(data);
       } catch (error) {
         console.log(error);
       }
     };
 
-    fetchData();
+    fetchReports();
   }, []);
 
   const handleFileUpload = (e) => {
@@ -46,7 +33,6 @@ const MedicalReports = () => {
 
     const formData = new FormData();
     formData.append("report", selectedFile);
-    formData.append("doctorId", doctorId);
 
     try {
       setLoading(true);
@@ -82,7 +68,7 @@ const MedicalReports = () => {
           <h1>Medical Reports</h1>
           <p>Access all your health reports and lab documents.</p>
 
-          {/* Upload */}
+          {/* Upload Section */}
           <div className="report-upload-box">
             <h2>Upload Report for AI Analysis</h2>
 
@@ -112,7 +98,7 @@ const MedicalReports = () => {
             </div>
           )}
 
-          {/* Reports */}
+          {/* Reports List */}
           <div className="reports-grid">
             {reports.length === 0 ? (
               <p>No medical reports found.</p>
@@ -126,7 +112,7 @@ const MedicalReports = () => {
 
                   <p>
                     <strong>Doctor:</strong>{" "}
-                    {report.doctor?.name || "Doctor not assigned"}
+                    {report.doctor?.name || "Not assigned yet"}
                   </p>
 
                   <p>
@@ -138,13 +124,26 @@ const MedicalReports = () => {
                     {report.doctorNotes || "No notes yet"}
                   </p>
 
-                  {/* Stored AI Analysis */}
                   <div className="analysis-content">
                     <strong>AI Analysis:</strong>
                     <ReactMarkdown>
                       {report.analyzedResult || "No analysis found"}
                     </ReactMarkdown>
                   </div>
+
+                  {/* AI Suggested Specialist */}
+                  {report.suggestedSpecialist && !report.doctor && (
+                    <button
+                      className="book-now-btn"
+                      onClick={() =>
+                        (window.location.href = `http://localhost:5173/appointment?specialist=${encodeURIComponent(
+                          report.suggestedSpecialist,
+                        )}`)
+                      }
+                    >
+                      Book {report.suggestedSpecialist}
+                    </button>
+                  )}
 
                   <div className="report-actions">
                     <button
