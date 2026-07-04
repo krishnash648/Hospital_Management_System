@@ -59,6 +59,11 @@ It is designed to simulate a real-world hospital workflow where patients can boo
 - Rate Doctors
 - Health Summary Tracking
 - Profile Settings
+- Appointment Rescheduling
+- Online Payment (Stripe)
+- Payment Invoice
+- Real-time Notifications
+- Google Meet Join Link for Online Consultation
 
 ---
 
@@ -76,6 +81,10 @@ It is designed to simulate a real-world hospital workflow where patients can boo
 - Add Doctor Notes
 - View Patient Records
 - Dashboard Metrics
+- Google Meet Link Creation
+- Appointment Approval with Meeting Link
+- Email Notifications to Patients
+- Prescription Email Notifications
 
 ---
 
@@ -106,10 +115,16 @@ It is designed to simulate a real-world hospital workflow where patients can boo
 - JWT Authentication
 - Multer
 - Nodemailer
+- Stripe
+- Tesseract.js
+- pdf-parse
 
 ### AI Integration
 
-- Gemini API / AI Model
+- Groq API (Llama 3.1 8B Instant)
+- OCR Support using Tesseract.js
+- PDF Text Extraction
+- AI Medical Report Analysis
 
 ---
 
@@ -169,15 +184,17 @@ The project includes:
 Patient:
 
 - Books appointment
-- Tracks status
-- Cancels appointment
-- Views history
+- Pays consultation fee
+- Downloads invoice
+- Reschedules appointment
+- Joins Google Meet after approval
 
 Doctor:
 
 - Approves appointment
+- Adds Google Meet link
 - Rejects appointment
-- Marks completed
+- Marks appointment completed
 
 ---
 
@@ -185,16 +202,17 @@ Doctor:
 
 Patient:
 
-- Uploads report
+- Uploads PDF Report
+- OCR automatically extracts text if needed
 - AI analyzes report
+- Doctor is automatically assigned
 - Views doctor notes
-- Downloads reports
 
 Doctor:
 
-- Views assigned reports
+- Reviews AI analysis
 - Adds doctor notes
-- Reviews patient reports
+- Reviews patient history
 
 ---
 
@@ -202,15 +220,16 @@ Doctor:
 
 Doctor:
 
-- Creates prescription
-- Updates prescription
-- Deletes prescription
-- Exports PDF
+- Creates prescriptions
+- Updates prescriptions
+- Deletes prescriptions
+- Sends email notification automatically
 
 Patient:
 
+- Receives notification
+- Receives email
 - Views prescriptions
-- Downloads prescriptions
 
 ---
 
@@ -313,7 +332,9 @@ MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_secret
 EMAIL_USER=your_email
 EMAIL_PASS=your_app_password
-GEMINI_API_KEY=your_api_key
+GROQ_API_KEY=your_groq_api_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+CLIENT_URL=http://localhost:5173
 ```
 
 ---
@@ -325,11 +346,15 @@ GEMINI_API_KEY=your_api_key
 - Refresh Token System
 - Better File Validation
 - Better Mobile Responsiveness
-- Notification System
-- Video Consultation
-- Payment Integration
 - Multi-Hospital Support
 - Advanced Analytics
+- Real Google Calendar Integration
+- Automatic Google Meet Creation
+- WebRTC Video Calling
+- Doctor Availability Calendar
+- SMS Notifications
+- Medical History Analytics
+- Mobile Application
 
 ---
 
