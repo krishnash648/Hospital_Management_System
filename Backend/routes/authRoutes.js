@@ -35,5 +35,4 @@ router.put("/preferences", protect, updatePreferences);
 // Notifications
 router.get("/notifications", protect, getNotifications);
 router.put("/notifications/read", protect, markNotificationsRead);
-
 export default router;

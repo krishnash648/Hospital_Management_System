@@ -1867,3 +1867,15 @@ body.compact-mode .toggle-group label {
   max-width: 320px;
   margin: 0 auto;
 }
+
+.patient-review-box h5,
+.doctor-reply-display h5 {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.patient-review-box p,
+.doctor-reply-display p {
+  font-size: 14px;
+  line-height: 1.5;
+}

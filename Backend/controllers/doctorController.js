@@ -115,7 +115,9 @@ export const approveAppointment = async (req, res) => {
 
     if (patient) {
       patient.notifications.push({
-        message: `Appointment approved. Join link available now.`,
+        message: "Appointment approved. Join link available now.",
+        type: "appointment",
+        link: "/appointments",
         read: false,
       });
 
@@ -150,6 +152,19 @@ export const rejectAppointment = async (req, res) => {
     appointment.status = "rejected";
     await appointment.save();
 
+    const patient = await User.findById(appointment.patient);
+
+    if (patient) {
+      patient.notifications.push({
+        message: "Your appointment has been rejected.",
+        type: "appointment",
+        link: "/history",
+        read: false,
+      });
+
+      await patient.save();
+    }
+
     res.status(200).json({
       message: "Appointment rejected",
       appointment,
@@ -183,6 +198,20 @@ export const completeAppointment = async (req, res) => {
 
     appointment.status = "completed";
     await appointment.save();
+
+    const patient = await User.findById(appointment.patient);
+
+    if (patient) {
+      patient.notifications.push({
+        message:
+          "Your appointment has been completed. You can now leave a review.",
+        type: "review",
+        link: "/history",
+        read: false,
+      });
+
+      await patient.save();
+    }
 
     res.status(200).json({
       message: "Appointment marked as completed",
@@ -462,6 +491,8 @@ export const replyToReview = async (req, res) => {
       $push: {
         notifications: {
           message: `Dr. ${req.user.name} replied to your review.`,
+          type: "reply",
+          link: "/history",
           read: false,
         },
       },

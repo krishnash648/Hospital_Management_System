@@ -70,18 +70,32 @@ const userSchema = new mongoose.Schema(
 
     notifications: [
       {
-        message: String,
+        message: {
+          type: String,
+          required: true,
+        },
+
+        type: {
+          type: String,
+          default: "",
+        },
+
+        link: {
+          type: String,
+          default: "",
+        },
+
         read: {
           type: Boolean,
           default: false,
         },
+
         createdAt: {
           type: Date,
           default: Date.now,
         },
       },
     ],
-
     notificationPreferences: {
       appointmentAlerts: {
         type: Boolean,

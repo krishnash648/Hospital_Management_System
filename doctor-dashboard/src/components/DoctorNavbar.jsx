@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { FaUserMd, FaBell } from "react-icons/fa";
 import API from "../services/api";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const DoctorNavbar = () => {
   const doctorName = localStorage.getItem("doctorName") || "Doctor";
-
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -15,6 +16,17 @@ const DoctorNavbar = () => {
       setNotifications(data);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleNotificationClick = (notification) => {
+    console.log("Clicked:", notification);
+
+    setShowNotifications(false);
+
+    if (notification.link) {
+      console.log("Navigating to:", notification.link);
+      navigate(notification.link);
     }
   };
 
@@ -90,6 +102,8 @@ const DoctorNavbar = () => {
                     className={`doctor-notification-item ${
                       notification.read ? "" : "unread"
                     }`}
+                    onClick={() => handleNotificationClick(notification)}
+                    style={{ cursor: "pointer" }}
                   >
                     <p>{notification.message}</p>
 

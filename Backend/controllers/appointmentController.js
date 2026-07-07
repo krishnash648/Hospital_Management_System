@@ -76,6 +76,8 @@ export const bookAppointment = async (req, res) => {
       $push: {
         notifications: {
           message: `Appointment booked with Dr. ${doctorData.name} on ${date} at ${time}`,
+          type: "appointment",
+          link: "/appointments",
         },
       },
     });
@@ -268,6 +270,8 @@ export const paymentSuccess = async (req, res) => {
       $push: {
         notifications: {
           message: `Payment successful for appointment #${appointment.invoiceNumber}`,
+          type: "payment",
+          link: "/appointments",
         },
       },
     });
@@ -339,6 +343,8 @@ export const cancelAppointment = async (req, res) => {
       $push: {
         notifications: {
           message: `Appointment cancelled for ${appointment.date.toISOString().split("T")[0]} at ${appointment.time}`,
+          type: "appointment",
+          link: "/history",
         },
       },
     });
@@ -434,6 +440,8 @@ export const rescheduleAppointment = async (req, res) => {
       $push: {
         notifications: {
           message: `Appointment rescheduled to ${date} at ${time}`,
+          type: "appointment",
+          link: "/appointments",
         },
       },
     });
@@ -442,6 +450,8 @@ export const rescheduleAppointment = async (req, res) => {
       $push: {
         notifications: {
           message: `Appointment rescheduled by patient to ${date} at ${time}`,
+          type: "appointment",
+          link: "/appointments",
         },
       },
     });
@@ -518,6 +528,8 @@ export const submitFeedback = async (req, res) => {
       $push: {
         notifications: {
           message: `${req.user.name} submitted feedback for your appointment.`,
+          type: "review",
+          link: "/reviews",
           read: false,
         },
       },

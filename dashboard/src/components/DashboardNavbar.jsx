@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { FaArrowLeft, FaUserCircle, FaBell } from "react-icons/fa";
 import API from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const DashboardNavbar = () => {
   const userName = localStorage.getItem("userName") || "Patient";
-
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -28,6 +29,14 @@ const DashboardNavbar = () => {
       } catch (error) {
         console.log(error);
       }
+    }
+  };
+
+  const handleNotificationClick = (notification) => {
+    setShowNotifications(false);
+
+    if (notification.link) {
+      navigate(notification.link);
     }
   };
 
@@ -91,6 +100,8 @@ const DashboardNavbar = () => {
                     className={`notification-item ${
                       notification.read ? "read" : "unread"
                     }`}
+                    onClick={() => handleNotificationClick(notification)}
+                    style={{ cursor: "pointer" }}
                   >
                     <p>{notification.message}</p>
                   </div>
