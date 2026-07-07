@@ -44,7 +44,6 @@ const appointmentSchema = new mongoose.Schema(
       default: "",
     },
 
-    // Feedback & Rating
     rating: {
       type: Number,
       min: 1,
@@ -62,7 +61,16 @@ const appointmentSchema = new mongoose.Schema(
       default: null,
     },
 
-    // Payment fields
+    doctorReply: {
+      type: String,
+      default: "",
+    },
+
+    doctorReplyDate: {
+      type: Date,
+      default: null,
+    },
+
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed"],

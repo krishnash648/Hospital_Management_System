@@ -401,3 +401,79 @@ export const markNotificationsRead = async (req, res) => {
     });
   }
 };
+
+export const getDoctorReviews = async (req, res) => {
+  try {
+    const reviews = await Appointment.find({
+      doctor: req.user._id,
+      rating: { $ne: null },
+    })
+      .populate("patient", "name")
+      .sort({ feedbackDate: -1 });
+
+    const totalReviews = reviews.length;
+
+    const averageRating =
+      totalReviews === 0
+        ? 0
+        : (
+            reviews.reduce((sum, item) => sum + item.rating, 0) / totalReviews
+          ).toFixed(1);
+
+    res.status(200).json({
+      averageRating,
+      totalReviews,
+      reviews,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const replyToReview = async (req, res) => {
+  try {
+    const { reply } = req.body;
+
+    const appointment = await Appointment.findOne({
+      _id: req.params.id,
+      doctor: req.user._id,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({
+        message: "Review not found",
+      });
+    }
+
+    if (!appointment.rating) {
+      return res.status(400).json({
+        message: "Patient has not submitted a review",
+      });
+    }
+
+    appointment.doctorReply = reply;
+    appointment.doctorReplyDate = new Date();
+
+    await appointment.save();
+
+    await User.findByIdAndUpdate(appointment.patient, {
+      $push: {
+        notifications: {
+          message: `Dr. ${req.user.name} replied to your review.`,
+          read: false,
+        },
+      },
+    });
+
+    res.status(200).json({
+      message: "Reply added successfully",
+      appointment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

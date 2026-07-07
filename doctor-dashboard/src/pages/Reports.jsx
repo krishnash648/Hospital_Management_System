@@ -15,7 +15,6 @@ const Reports = () => {
 
       setReports(data);
 
-      // preload notes
       const notesMap = {};
       data.forEach((report) => {
         notesMap[report._id] = report.doctorNotes || "";

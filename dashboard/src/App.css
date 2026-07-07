@@ -1495,9 +1495,53 @@ body.compact-mode .toggle-group label {
   background: #1d4ed8;
 }
 
+/* Patient Review */
+.patient-review {
+  margin-top: 10px;
+}
+
+.patient-review strong {
+  display: block;
+  color: #111827;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.patient-review p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.doctor-reply {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: #eff6ff;
+  border-left: 4px solid #2563eb;
+  border-radius: 10px;
+}
+
+.doctor-reply strong {
+  display: block;
+  color: #1d4ed8;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.doctor-reply p {
+  margin: 0;
+  color: #374151;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
 .review-done {
-  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   color: #16a34a;
+  font-weight: 600;
 }
 
 .action-buttons {
@@ -1764,4 +1808,62 @@ body.compact-mode .toggle-group label {
 
 .reschedule-close-btn:hover {
   background: #dc2626;
+}
+
+.review-display {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.review-rating-display {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.patient-review-box {
+  width: 100%;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-left: 4px solid #10b981;
+  border-radius: 10px;
+}
+
+.patient-review-box h5 {
+  margin: 0 0 6px;
+  color: #059669;
+  font-size: 14px;
+}
+
+.patient-review-box p {
+  margin: 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.doctor-reply-display {
+  width: 100%;
+  padding: 10px 14px;
+  background: #eff6ff;
+  border-left: 4px solid #2563eb;
+  border-radius: 10px;
+}
+
+.doctor-reply-display h5 {
+  margin: 0 0 6px;
+  color: #2563eb;
+  font-size: 14px;
+}
+
+.doctor-reply-display p {
+  margin: 0;
+  color: #1f2937;
+  line-height: 1.5;
+}
+
+.patient-review-box,
+.doctor-reply-display {
+  max-width: 320px;
+  margin: 0 auto;
 }

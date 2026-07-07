@@ -5,7 +5,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useEffect } from "react";
-
+import Reviews from "./pages/Reviews";
 import DoctorHome from "./pages/DoctorHome";
 import DoctorAppointments from "./pages/DoctorAppointments";
 import PatientRecords from "./pages/PatientRecords";
@@ -94,6 +94,14 @@ const AppRoutes = () => {
           element={
             <DoctorProtectedRoute>
               <Reports />
+            </DoctorProtectedRoute>
+          }
+        />
+        <Route
+          path="/reviews"
+          element={
+            <DoctorProtectedRoute>
+              <Reviews />
             </DoctorProtectedRoute>
           }
         />

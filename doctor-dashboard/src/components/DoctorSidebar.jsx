@@ -7,6 +7,7 @@ import {
   FaFileMedical,
   FaCog,
   FaSignOutAlt,
+  FaStar,
 } from "react-icons/fa";
 
 const DoctorSidebar = () => {
@@ -28,6 +29,11 @@ const DoctorSidebar = () => {
       icon: <FaPrescriptionBottleAlt />,
     },
     { name: "Reports", path: "/reports", icon: <FaFileMedical /> },
+    {
+      name: "Reviews",
+      path: "/reviews",
+      icon: <FaStar />,
+    },
     { name: "Settings", path: "/settings", icon: <FaCog /> },
   ];
 

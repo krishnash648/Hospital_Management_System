@@ -10,6 +10,30 @@ const AppointmentHistory = () => {
   const [rating, setRating] = useState("");
   const [comment, setComment] = useState("");
 
+  const fetchAppointmentHistory = async () => {
+    try {
+      const { data } = await API.get("/appointments/my");
+
+      const today = new Date();
+
+      const filteredHistory = data.filter((appointment) => {
+        const appointmentDate = new Date(appointment.date);
+
+        return (
+          appointment.status === "completed" ||
+          appointment.status === "cancelled" ||
+          appointment.status === "rejected" ||
+          appointmentDate < today
+        );
+      });
+
+      setHistoryAppointments(filteredHistory);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load appointment history");
+    }
+  };
+
   useEffect(() => {
     const fetchAppointmentHistory = async () => {
       try {
@@ -67,21 +91,11 @@ const AppointmentHistory = () => {
 
       toast.success("Review submitted");
 
-      setHistoryAppointments((prev) =>
-        prev.map((appointment) =>
-          appointment._id === activeReview._id
-            ? {
-                ...appointment,
-                rating: Number(rating),
-                feedback: comment,
-              }
-            : appointment,
-        ),
-      );
-
       setActiveReview(null);
       setRating("");
       setComment("");
+
+      fetchAppointmentHistory();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to submit review");
     }
@@ -143,9 +157,25 @@ const AppointmentHistory = () => {
                       <td>
                         {appointment.status === "completed" ? (
                           appointment.rating ? (
-                            <span className="review-done">
-                              Rated ⭐ {appointment.rating}
-                            </span>
+                            <div className="review-display">
+                              <div className="review-rating-display">
+                                Rated ⭐ {appointment.rating}
+                              </div>
+
+                              {appointment.feedback && (
+                                <div className="patient-review-box">
+                                  <h5>Your Review</h5>
+                                  <p>{appointment.feedback}</p>
+                                </div>
+                              )}
+
+                              {appointment.doctorReply && (
+                                <div className="doctor-reply-display">
+                                  <h5>Doctor Reply</h5>
+                                  <p>{appointment.doctorReply}</p>
+                                </div>
+                              )}
+                            </div>
                           ) : (
                             <button
                               className="feedback-btn"
