@@ -44,6 +44,24 @@ const appointmentSchema = new mongoose.Schema(
       default: "",
     },
 
+    // Feedback & Rating
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+      default: null,
+    },
+
+    feedback: {
+      type: String,
+      default: "",
+    },
+
+    feedbackDate: {
+      type: Date,
+      default: null,
+    },
+
     // Payment fields
     paymentStatus: {
       type: String,

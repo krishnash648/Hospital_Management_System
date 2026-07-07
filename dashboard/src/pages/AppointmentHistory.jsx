@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 
 const AppointmentHistory = () => {
   const [historyAppointments, setHistoryAppointments] = useState([]);
-  const [reviewedAppointments, setReviewedAppointments] = useState([]);
   const [activeReview, setActiveReview] = useState(null);
   const [rating, setRating] = useState("");
   const [comment, setComment] = useState("");
@@ -44,6 +43,11 @@ const AppointmentHistory = () => {
   };
 
   const openReviewBox = (appointment) => {
+    if (appointment.rating) {
+      toast.info("You already reviewed this appointment");
+      return;
+    }
+
     setActiveReview(appointment);
     setRating("");
     setComment("");
@@ -51,24 +55,34 @@ const AppointmentHistory = () => {
 
   const submitReview = async () => {
     if (!rating || rating < 1 || rating > 5) {
-      toast.error("Please enter rating between 1 to 5");
+      toast.error("Please enter rating between 1 and 5");
       return;
     }
 
     try {
-      await API.post("/reviews", {
-        doctor: activeReview.doctor._id,
-        appointment: activeReview._id,
-        rating,
-        comment,
+      await API.put(`/appointments/${activeReview._id}/feedback`, {
+        rating: Number(rating),
+        feedback: comment,
       });
 
       toast.success("Review submitted");
 
-      setReviewedAppointments((prev) => [...prev, activeReview._id]);
+      setHistoryAppointments((prev) =>
+        prev.map((appointment) =>
+          appointment._id === activeReview._id
+            ? {
+                ...appointment,
+                rating: Number(rating),
+                feedback: comment,
+              }
+            : appointment,
+        ),
+      );
+
       setActiveReview(null);
+      setRating("");
+      setComment("");
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message || "Failed to submit review");
     }
   };
@@ -128,8 +142,10 @@ const AppointmentHistory = () => {
 
                       <td>
                         {appointment.status === "completed" ? (
-                          reviewedAppointments.includes(appointment._id) ? (
-                            <span className="review-done">Rated</span>
+                          appointment.rating ? (
+                            <span className="review-done">
+                              Rated ⭐ {appointment.rating}
+                            </span>
                           ) : (
                             <button
                               className="feedback-btn"
@@ -149,7 +165,7 @@ const AppointmentHistory = () => {
             )}
           </div>
 
-          {activeReview && (
+          {activeReview && !activeReview.rating && (
             <div className="review-box">
               <h2>Rate Dr. {activeReview.doctor?.name}</h2>
 

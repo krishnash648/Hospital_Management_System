@@ -456,3 +456,82 @@ export const rescheduleAppointment = async (req, res) => {
     });
   }
 };
+
+export const submitFeedback = async (req, res) => {
+  try {
+    console.log("========== FEEDBACK REQUEST ==========");
+    console.log("Request Body:", req.body);
+    console.log("Appointment ID:", req.params.id);
+    console.log("Logged-in Patient:", req.user._id);
+
+    const { rating, review } = req.body;
+
+    const appointment = await Appointment.findOne({
+      _id: req.params.id,
+      patient: req.user._id,
+    });
+
+    console.log("Appointment Found:", appointment);
+
+    if (!appointment) {
+      return res.status(404).json({
+        message: "Appointment not found",
+      });
+    }
+
+    console.log("Current Status:", appointment.status);
+    console.log("Current Rating:", appointment.rating);
+
+    if (appointment.status !== "completed") {
+      return res.status(400).json({
+        message: "You can only review completed appointments",
+      });
+    }
+
+    if (appointment.rating) {
+      return res.status(400).json({
+        message: "Feedback already submitted",
+      });
+    }
+
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({
+        message: "Rating must be between 1 and 5",
+      });
+    }
+
+    appointment.rating = Number(rating);
+    appointment.feedback = review || "";
+    appointment.feedbackDate = new Date();
+
+    console.log("Before Save:", appointment);
+
+    await appointment.save();
+
+    console.log("Saved Successfully!");
+
+    const updatedAppointment = await Appointment.findById(req.params.id);
+
+    console.log("After Save:", updatedAppointment);
+
+    await User.findByIdAndUpdate(appointment.doctor, {
+      $push: {
+        notifications: {
+          message: `${req.user.name} submitted feedback for your appointment.`,
+          read: false,
+        },
+      },
+    });
+
+    res.status(200).json({
+      message: "Feedback submitted successfully",
+      appointment: updatedAppointment,
+    });
+  } catch (error) {
+    console.log("SUBMIT FEEDBACK ERROR:", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

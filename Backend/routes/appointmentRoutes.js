@@ -10,6 +10,7 @@ import {
   cancelAppointment,
   getDoctorBookedSlots,
   rescheduleAppointment,
+  submitFeedback,
 } from "../controllers/appointmentController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -27,6 +28,7 @@ router.put("/:id/pay", protect, markAppointmentPaid);
 router.put("/:id/payment-success", protect, paymentSuccess);
 router.get("/:id/invoice", protect, getAppointmentInvoice);
 router.put("/:id/reschedule", protect, rescheduleAppointment);
+router.put("/:id/feedback", protect, submitFeedback);
 router.get("/doctor", protect, getDoctorAppointments);
 router.put("/:id/status", protect, updateAppointmentStatus);
 

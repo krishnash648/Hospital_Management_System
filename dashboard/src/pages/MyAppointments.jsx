@@ -12,6 +12,11 @@ const MyAppointments = () => {
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("");
 
+  // Feedback states
+  const [feedbackAppointment, setFeedbackAppointment] = useState(null);
+  const [rating, setRating] = useState(5);
+  const [review, setReview] = useState("");
+
   const fetchAppointments = async () => {
     try {
       const { data } = await API.get("/appointments/my");
@@ -67,6 +72,28 @@ const MyAppointments = () => {
       fetchAppointments();
     } catch (error) {
       toast.error(error.response?.data?.message || "Reschedule failed");
+    }
+  };
+
+  // Submit feedback
+  const submitFeedback = async () => {
+    if (!feedbackAppointment) return;
+
+    try {
+      await API.put(`/appointments/${feedbackAppointment}/feedback`, {
+        rating,
+        review,
+      });
+
+      toast.success("Feedback submitted");
+
+      setFeedbackAppointment(null);
+      setRating(5);
+      setReview("");
+
+      fetchAppointments();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to submit feedback");
     }
   };
 
@@ -135,6 +162,7 @@ const MyAppointments = () => {
                         Join Meet
                       </button>
                     )}
+
                   {appointment.paymentStatus === "pending" && (
                     <button
                       className="pay-btn"
@@ -153,19 +181,40 @@ const MyAppointments = () => {
                     </button>
                   )}
 
-                  <button
-                    className="table-btn"
-                    onClick={() => setRescheduleId(appointment._id)}
-                  >
-                    Reschedule
-                  </button>
+                  {appointment.status === "completed" &&
+                    !appointment.feedback && (
+                      <button
+                        className="feedback-btn"
+                        onClick={() => setFeedbackAppointment(appointment._id)}
+                      >
+                        Give Feedback
+                      </button>
+                    )}
 
-                  <button
-                    className="cancel-btn"
-                    onClick={() => cancelAppointment(appointment._id)}
-                  >
-                    Cancel
-                  </button>
+                  {appointment.status === "completed" &&
+                    appointment.feedback && (
+                      <button className="feedback-btn" disabled>
+                        Feedback Submitted
+                      </button>
+                    )}
+
+                  {appointment.status !== "completed" && (
+                    <>
+                      <button
+                        className="table-btn"
+                        onClick={() => setRescheduleId(appointment._id)}
+                      >
+                        Reschedule
+                      </button>
+
+                      <button
+                        className="cancel-btn"
+                        onClick={() => cancelAppointment(appointment._id)}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  )}
                 </div>
               </td>
             )}
@@ -284,6 +333,52 @@ const MyAppointments = () => {
             <button className="cancel-btn" onClick={() => setInvoice(null)}>
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Feedback Modal */}
+      {feedbackAppointment && (
+        <div className="feedback-modal">
+          <div className="feedback-card">
+            <h2>Rate Your Appointment</h2>
+
+            <div className="feedback-stars">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={`feedback-star ${star <= rating ? "active" : ""}`}
+                  onClick={() => setRating(star)}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+
+            <textarea
+              className="feedback-textarea"
+              rows="5"
+              placeholder="Write your review..."
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+            />
+
+            <div className="feedback-actions">
+              <button className="feedback-submit-btn" onClick={submitFeedback}>
+                Submit Feedback
+              </button>
+
+              <button
+                className="feedback-cancel-btn"
+                onClick={() => {
+                  setFeedbackAppointment(null);
+                  setRating(5);
+                  setReview("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
