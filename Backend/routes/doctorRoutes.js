@@ -13,8 +13,9 @@ import {
   getDoctorPrescriptions,
   updatePrescription,
   deletePrescription,
+  getDoctorNotifications,
+  markNotificationsRead,
 } from "../controllers/doctorController.js";
-
 import { protect } from "../middleware/authMiddleware.js";
 import { doctorOnly } from "../middleware/doctorMiddleware.js";
 
@@ -22,14 +23,10 @@ const router = express.Router();
 
 router.get("/", getAllDoctors);
 router.get("/department/:department", getDoctorsByDepartment);
-
 router.get("/my-appointments", protect, doctorOnly, getDoctorAppointments);
-
-// Reports
 router.get("/reports", protect, doctorOnly, getDoctorReports);
 router.put("/reports/:id/notes", protect, doctorOnly, addDoctorNotes);
 
-// Appointment actions
 router.put(
   "/appointments/:id/approve",
   protect,
@@ -46,12 +43,12 @@ router.put(
   completeAppointment,
 );
 
-// Prescriptions
 router.post("/prescriptions", protect, doctorOnly, createPrescription);
 router.get("/prescriptions", protect, doctorOnly, getDoctorPrescriptions);
 router.put("/prescriptions/:id", protect, doctorOnly, updatePrescription);
 router.delete("/prescriptions/:id", protect, doctorOnly, deletePrescription);
-
+router.get("/notifications", protect, doctorOnly, getDoctorNotifications);
+router.put("/notifications/read", protect, doctorOnly, markNotificationsRead);
 router.get("/:id", getDoctorById);
 
 export default router;

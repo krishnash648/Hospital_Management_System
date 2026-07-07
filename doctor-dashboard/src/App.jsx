@@ -12,7 +12,6 @@ import PatientRecords from "./pages/PatientRecords";
 import Prescriptions from "./pages/Prescriptions";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
-
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,13 +21,11 @@ const DoctorProtectedRoute = ({ children }) => {
   const patientToken = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
-  // patient trying doctor dashboard
   if (role === "patient" && patientToken) {
     window.location.replace("http://localhost:5174/");
     return null;
   }
 
-  // no doctor auth
   if (!doctorToken || role !== "doctor") {
     window.location.replace("http://localhost:5173/login");
     return null;

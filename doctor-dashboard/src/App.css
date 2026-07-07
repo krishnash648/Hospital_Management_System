@@ -967,13 +967,15 @@ body {
 }
 
 .dashboard-navbar {
-  height: 75px;
+  height: 80px;
   background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 26px;
   border-bottom: 1px solid #e2e8f0;
+  position: relative;
+  overflow: visible;
 }
 
 .dashboard-logo {
@@ -983,7 +985,8 @@ body {
 .dashboard-navbar-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
+  position: relative;
 }
 
 .back-btn {
@@ -1001,6 +1004,7 @@ body {
   gap: 8px;
   font-size: 18px;
   margin-right: 8px;
+  margin-left: 10px;
 }
 
 .chat-text strong {
@@ -1459,7 +1463,6 @@ body.compact-mode .toggle-group label {
   }
 }
 
-/* Doctor Availability Section */
 .availability-days {
   margin-top: 20px;
 }
@@ -1500,7 +1503,6 @@ body.compact-mode .toggle-group label {
   cursor: pointer;
 }
 
-/* Slot Section */
 .availability-slots {
   margin-top: 25px;
 }
@@ -1677,4 +1679,135 @@ body.compact-mode .toggle-group label {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+.doctor-notification-wrapper {
+  position: relative;
+}
+
+.doctor-notification-btn {
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 50%;
+  background: #f8fafc;
+  color: #334155;
+  cursor: pointer;
+  position: relative;
+  font-size: 18px;
+  transition: 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doctor-notification-btn:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.doctor-notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.doctor-notification-dropdown {
+  max-height: 420px;
+  overflow-y: auto;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+  border: 1px solid #e5e7eb;
+  position: absolute;
+  top: 60px;
+  right: 0;
+  width: 360px;
+  z-index: 99999;
+}
+
+.doctor-notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.doctor-notification-header h4 {
+  margin: 0;
+  color: #111827;
+  font-size: 18px;
+}
+
+.doctor-read-btn {
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.doctor-read-btn:hover {
+  text-decoration: underline;
+}
+
+.doctor-empty-notification {
+  padding: 25px;
+  text-align: center;
+  color: #64748b;
+}
+
+.doctor-notification-item {
+  padding: 15px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: 0.25s;
+}
+
+.doctor-notification-item:hover {
+  background: #f8fafc;
+}
+
+.doctor-notification-item.unread {
+  background: #eff6ff;
+  border-left: 5px solid #2563eb;
+}
+
+.doctor-notification-item p {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.doctor-notification-item small {
+  color: #64748b;
+  font-size: 12px;
+  display: block;
+  margin-top: 8px;
+}
+
+.doctor-notification-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.doctor-notification-dropdown::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+.doctor-notification-dropdown::-webkit-scrollbar-track {
+  background: transparent;
 }

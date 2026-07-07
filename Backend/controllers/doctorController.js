@@ -353,3 +353,51 @@ export const deletePrescription = async (req, res) => {
     });
   }
 };
+
+export const getDoctorNotifications = async (req, res) => {
+  try {
+    const doctor = await User.findById(req.user._id).select("notifications");
+
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Doctor not found",
+      });
+    }
+
+    const notifications = doctor.notifications.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+    );
+
+    res.status(200).json(notifications);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const markNotificationsRead = async (req, res) => {
+  try {
+    const doctor = await User.findById(req.user._id);
+
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Doctor not found",
+      });
+    }
+
+    doctor.notifications.forEach((notification) => {
+      notification.read = true;
+    });
+
+    await doctor.save();
+
+    res.status(200).json({
+      message: "Notifications marked as read",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
