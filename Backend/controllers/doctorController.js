@@ -4,7 +4,6 @@ import Report from "../models/Report.js";
 import Prescription from "../models/Prescription.js";
 import sendEmail from "../utils/sendEmail.js";
 
-// Get all doctors
 export const getAllDoctors = async (req, res) => {
   try {
     const doctors = await User.find({ role: "doctor" }).select("-password");
@@ -17,7 +16,6 @@ export const getAllDoctors = async (req, res) => {
   }
 };
 
-// Get doctor by ID
 export const getDoctorById = async (req, res) => {
   try {
     const doctor = await User.findOne({
@@ -39,7 +37,6 @@ export const getDoctorById = async (req, res) => {
   }
 };
 
-// Get doctors by department
 export const getDoctorsByDepartment = async (req, res) => {
   try {
     const doctors = await User.find({
@@ -55,7 +52,6 @@ export const getDoctorsByDepartment = async (req, res) => {
   }
 };
 
-// Get doctor appointments
 export const getDoctorAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({
@@ -72,7 +68,6 @@ export const getDoctorAppointments = async (req, res) => {
   }
 };
 
-// Get doctor reports
 export const getDoctorReports = async (req, res) => {
   try {
     const reports = await Report.find({
@@ -90,7 +85,6 @@ export const getDoctorReports = async (req, res) => {
   }
 };
 
-// Approve appointment
 export const approveAppointment = async (req, res) => {
   try {
     const { meetingLink } = req.body;
@@ -135,7 +129,6 @@ export const approveAppointment = async (req, res) => {
   }
 };
 
-// Reject appointment
 export const rejectAppointment = async (req, res) => {
   try {
     const appointment = await Appointment.findOne({
@@ -176,7 +169,6 @@ export const rejectAppointment = async (req, res) => {
   }
 };
 
-// Complete appointment
 export const completeAppointment = async (req, res) => {
   try {
     const appointment = await Appointment.findOne({
@@ -224,7 +216,6 @@ export const completeAppointment = async (req, res) => {
   }
 };
 
-// Add doctor notes
 export const addDoctorNotes = async (req, res) => {
   try {
     const report = await Report.findOne({
@@ -252,7 +243,6 @@ export const addDoctorNotes = async (req, res) => {
   }
 };
 
-// Create prescription
 export const createPrescription = async (req, res) => {
   try {
     const { patient, medicineName, dosage, duration, notes } = req.body;
@@ -307,7 +297,6 @@ export const createPrescription = async (req, res) => {
   }
 };
 
-// Get doctor prescriptions
 export const getDoctorPrescriptions = async (req, res) => {
   try {
     const prescriptions = await Prescription.find({
@@ -322,7 +311,6 @@ export const getDoctorPrescriptions = async (req, res) => {
   }
 };
 
-// Update prescription
 export const updatePrescription = async (req, res) => {
   try {
     const prescription = await Prescription.findOne({
@@ -357,7 +345,6 @@ export const updatePrescription = async (req, res) => {
   }
 };
 
-// Delete prescription
 export const deletePrescription = async (req, res) => {
   try {
     const prescription = await Prescription.findOne({
@@ -501,6 +488,102 @@ export const replyToReview = async (req, res) => {
     res.status(200).json({
       message: "Reply added successfully",
       appointment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getDoctorAnalytics = async (req, res) => {
+  try {
+    const doctorId = req.user._id;
+
+    const appointments = await Appointment.find({
+      doctor: doctorId,
+    });
+
+    const reports = await Report.find({
+      doctor: doctorId,
+    });
+
+    const prescriptions = await Prescription.find({
+      doctor: doctorId,
+    });
+
+    const totalPatients = new Set(appointments.map((a) => a.patient.toString()))
+      .size;
+
+    const pendingAppointments = appointments.filter(
+      (a) => a.status === "pending",
+    ).length;
+
+    const approvedAppointments = appointments.filter(
+      (a) => a.status === "approved",
+    ).length;
+
+    const completedAppointments = appointments.filter(
+      (a) => a.status === "completed",
+    ).length;
+
+    const cancelledAppointments = appointments.filter(
+      (a) => a.status === "cancelled",
+    ).length;
+
+    const rejectedAppointments = appointments.filter(
+      (a) => a.status === "rejected",
+    ).length;
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const todayAppointments = appointments.filter(
+      (a) => a.date.toISOString().split("T")[0] === today,
+    ).length;
+
+    const reviews = appointments.filter((a) => a.rating);
+
+    const averageRating =
+      reviews.length === 0
+        ? 0
+        : (
+            reviews.reduce((sum, item) => sum + item.rating, 0) / reviews.length
+          ).toFixed(1);
+
+    // Monthly appointments
+    const monthlyAppointments = Array(12).fill(0);
+
+    appointments.forEach((a) => {
+      const month = new Date(a.date).getMonth();
+      monthlyAppointments[month]++;
+    });
+
+    const ratings = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    };
+
+    reviews.forEach((r) => {
+      ratings[r.rating]++;
+    });
+
+    res.json({
+      totalPatients,
+      totalReports: reports.length,
+      totalPrescriptions: prescriptions.length,
+      pendingAppointments,
+      approvedAppointments,
+      completedAppointments,
+      cancelledAppointments,
+      rejectedAppointments,
+      todayAppointments,
+      averageRating,
+      totalReviews: reviews.length,
+      monthlyAppointments,
+      ratings,
     });
   } catch (error) {
     res.status(500).json({

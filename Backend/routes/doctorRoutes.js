@@ -17,6 +17,7 @@ import {
   markNotificationsRead,
   getDoctorReviews,
   replyToReview,
+  getDoctorAnalytics,
 } from "../controllers/doctorController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { doctorOnly } from "../middleware/doctorMiddleware.js";
@@ -53,6 +54,7 @@ router.get("/notifications", protect, doctorOnly, getDoctorNotifications);
 router.put("/notifications/read", protect, doctorOnly, markNotificationsRead);
 router.get("/reviews", protect, doctorOnly, getDoctorReviews);
 router.put("/reviews/:id/reply", protect, doctorOnly, replyToReview);
+router.get("/analytics", protect, doctorOnly, getDoctorAnalytics);
 router.get("/:id", getDoctorById);
 
 export default router;
